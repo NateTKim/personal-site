@@ -1,0 +1,127 @@
+{
+  "exportedAt": "2026-11-14T06:27:01.713Z",
+  "source": {
+    "table": "cached_filings",
+    "accessionNumber": "0000320193-26-000020",
+    "form": "10-Q",
+    "periodEnd": "2026-06-27",
+    "cachedAt": "2026-08-12T21:09:52.378196+00:00"
+  },
+  "result": {
+    "ok": true,
+    "summary": "Apple reported a strong quarter for the three months ended June 27, 2026. The company brought in $109.42 billion in revenue, up +16.4% from the same period a year ago. Net income (the money left after all costs and taxes) came in at $29.79 billion, up +27.1%. Diluted EPS (profit earned per share, after accounting for all possible shares) was $2.02, up +28.7%. Every region grew, with Europe and Greater China leading the way. iPhone was the biggest driver of growth, while iPad was the one weak spot, slipping slightly from last year. Services — things like the App Store, Apple TV+, iCloud, and advertising — also grew solidly and continued to carry very high profit margins.\n\nProfitability improved meaningfully across the board. Gross margin (the share of revenue left after the direct cost of making products and delivering services) rose to 50.1%, up +3.6 percentage points from a year ago. Management noted that tariff refunds helped boost product margins this quarter, alongside a favorable mix of higher-end products. Operating income (profit from day-to-day business) grew +26.6% to $35.70 billion. The company continues to pour money into artificial intelligence infrastructure, which pushed research and development spending up sharply year over year. Apple also returned a large amount of cash to shareholders through share buybacks and dividends during the quarter.\n\nNotable changes\n- Revenue grew +16.4% year over year, reaching $109.42 billion\n- Net income rose +27.1% to $29.79 billion, with diluted EPS up +28.7% to $2.02\n- Gross margin improved by +3.6 percentage points to 50.1%, reflecting better product mix and tariff refunds\n- Operating income climbed +26.6% to $35.70 billion\n\nWhat management may be downplaying\n- Apple appears to have benefited from tariff refunds that helped lift product margins this quarter, but management openly warns that component supply constraints — especially for advanced semiconductors, NAND storage, and DRAM memory — are expected to intensify, which may put future margins and revenue under pressure in ways that refunds may not be able to offset\n- A U.S. court order currently prevents Apple from collecting commissions on certain app purchases, and a separate antitrust case accuses the company of monopolizing the smartphone market; if either goes against Apple, it may be required to significantly change how it earns money from its platforms\n- Apple earns meaningful revenue from a licensing arrangement with Google to make Google the default search engine on Apple devices, and that arrangement may be disrupted by ongoing court proceedings against Google — a risk that gets relatively little airtime in the filing despite its potential impact on the Services segment",
+    "snapshot": {
+      "cik": "0000320193",
+      "form": "10-Q",
+      "ticker": "AAPL",
+      "history": [
+        {
+          "eps": null,
+          "revenue": 94930000000,
+          "periodEnd": "2024-09-28",
+          "revenueDerived": true
+        },
+        {
+          "eps": 2.4,
+          "revenue": 124300000000,
+          "periodEnd": "2024-12-28",
+          "revenueDerived": false
+        },
+        {
+          "eps": 1.65,
+          "revenue": 95359000000,
+          "periodEnd": "2025-03-29",
+          "revenueDerived": false
+        },
+        {
+          "eps": 1.57,
+          "revenue": 94036000000,
+          "periodEnd": "2025-06-28",
+          "revenueDerived": false
+        },
+        {
+          "eps": null,
+          "revenue": 102466000000,
+          "periodEnd": "2025-09-27",
+          "revenueDerived": true
+        },
+        {
+          "eps": 2.84,
+          "revenue": 143756000000,
+          "periodEnd": "2025-12-27",
+          "revenueDerived": false
+        },
+        {
+          "eps": 2.01,
+          "revenue": 111184000000,
+          "periodEnd": "2026-03-28",
+          "revenueDerived": false
+        },
+        {
+          "eps": 2.02,
+          "revenue": 109417000000,
+          "periodEnd": "2026-06-27",
+          "revenueDerived": false
+        }
+      ],
+      "metrics": {
+        "revenue": {
+          "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "unit": "USD",
+          "value": 109417000000,
+          "yoyPct": 0.1635650176528138,
+          "priorValue": 94036000000
+        },
+        "netIncome": {
+          "tag": "NetIncomeLoss",
+          "unit": "USD",
+          "value": 29789000000,
+          "yoyPct": 0.2711871639498165,
+          "priorValue": 23434000000
+        },
+        "dilutedEps": {
+          "tag": "EarningsPerShareDiluted",
+          "unit": "USD/shares",
+          "value": 2.02,
+          "yoyPct": 0.286624203821656,
+          "priorValue": 1.57
+        },
+        "totalAssets": {
+          "tag": "Assets",
+          "unit": "USD",
+          "value": 383266000000,
+          "yoyPct": null,
+          "priorValue": null
+        },
+        "grossMarginPct": {
+          "tag": "GrossProfit",
+          "unit": "fraction",
+          "value": 0.500562069879452,
+          "yoyPct": 0.035655013007615644,
+          "priorValue": 0.4649070568718363
+        },
+        "operatingIncome": {
+          "tag": "OperatingIncomeLoss",
+          "unit": "USD",
+          "value": 35695000000,
+          "yoyPct": 0.26569037656903766,
+          "priorValue": 28202000000
+        },
+        "totalLiabilities": {
+          "tag": "Liabilities",
+          "unit": "USD",
+          "value": 275746000000,
+          "yoyPct": null,
+          "priorValue": null
+        }
+      },
+      "filedDate": "2026-07-31",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/aapl-20260627.htm",
+      "periodEnd": "2026-06-27",
+      "companyName": "Apple Inc.",
+      "historyKind": "quarterly",
+      "accessionNumber": "0000320193-26-000020"
+    },
+    "summaryNote": null
+  }
+}

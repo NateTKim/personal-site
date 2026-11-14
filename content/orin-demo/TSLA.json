@@ -1,0 +1,127 @@
+{
+  "exportedAt": "2026-11-14T06:27:01.719Z",
+  "source": {
+    "table": "cached_filings",
+    "accessionNumber": "0001628280-26-049270",
+    "form": "10-Q",
+    "periodEnd": "2026-06-30",
+    "cachedAt": "2026-07-23T23:30:27.902332+00:00"
+  },
+  "result": {
+    "ok": true,
+    "summary": "Tesla brought in $28.24 billion in revenue for the three months ended June 30, 2026, up +25.5% from the same period a year ago. More vehicles were delivered, the services business grew strongly, and the energy storage segment added to the total. Despite that strong top-line growth, net income (the profit left after all costs) came in at $1.11 billion, down -4.9% from a year ago. The main reason profits slipped even as sales rose is that costs are climbing fast — especially spending on research and development (money spent to create new products and technology) and on paying employees and running the business. Those two cost lines each grew far faster than revenue did.\n\nThe company still has a large and healthy balance sheet (its overall financial position), with $148.52 billion in total assets and $61.01 billion in total liabilities. Tesla is investing very heavily right now — in AI computing, new factories, Robotaxi infrastructure, and its humanoid robot called Optimus. Management says this spending phase will weigh on profits in the near term but is meant to position the company for long-term growth. The Cybercab began production in early 2026, and the Robotaxi service launched in June 2025 and continues to expand.\n\nNotable changes\n- Revenue grew +25.5% year over year to $28.24 billion, driven by higher vehicle deliveries and a growing services business.\n- Operating income (profit from day-to-day business) fell -56.9% year over year to $398.00 million, meaning costs rose much faster than sales.\n- Diluted EPS (profit earned per share) dipped -3.0% to $0.32, compared to $0.33 in the same period last year.\n- Gross margin (the share of each sales dollar left after direct costs) slipped from 17.2% to 16.8%, a change of -0.4 percentage points.\n\nWhat management may be downplaying\n- The energy generation and storage segment appears to be quietly under pressure: the filing notes that tariffs on battery cell imports — including provisions of a new federal law — may significantly increase costs and hurt consumer demand, and this segment's gross margin fell sharply in the quarter compared to a year ago.\n- Tesla is carrying several significant ongoing legal matters that receive brief mention — including a federal securities class action alleging misrepresentations about Autopilot and FSD, a product liability verdict from a fatal accident case involving sizeable damages that is now on appeal, and a discrimination trial set for September 2026 — any of which may result in material financial consequences that are currently described as too uncertain to estimate.\n- The company invested $2.00 billion in SpaceX common stock — a company run by Tesla's own CEO — and is selling Megapack products to SpaceX as a customer; this concentration of financial and commercial ties to a related party controlled by the CEO may present governance and conflict-of-interest risks that are disclosed briefly in the notes rather than prominently discussed.",
+    "snapshot": {
+      "cik": "0001318605",
+      "form": "10-Q",
+      "ticker": "TSLA",
+      "history": [
+        {
+          "eps": 0.62,
+          "revenue": 25182000000,
+          "periodEnd": "2024-09-30",
+          "revenueDerived": false
+        },
+        {
+          "eps": null,
+          "revenue": 25707000000,
+          "periodEnd": "2024-12-31",
+          "revenueDerived": true
+        },
+        {
+          "eps": 0.12,
+          "revenue": 19335000000,
+          "periodEnd": "2025-03-31",
+          "revenueDerived": false
+        },
+        {
+          "eps": 0.33,
+          "revenue": 22496000000,
+          "periodEnd": "2025-06-30",
+          "revenueDerived": false
+        },
+        {
+          "eps": 0.39,
+          "revenue": 28095000000,
+          "periodEnd": "2025-09-30",
+          "revenueDerived": false
+        },
+        {
+          "eps": null,
+          "revenue": 24901000000,
+          "periodEnd": "2025-12-31",
+          "revenueDerived": true
+        },
+        {
+          "eps": 0.13,
+          "revenue": 22387000000,
+          "periodEnd": "2026-03-31",
+          "revenueDerived": false
+        },
+        {
+          "eps": 0.32,
+          "revenue": 28236000000,
+          "periodEnd": "2026-06-30",
+          "revenueDerived": false
+        }
+      ],
+      "metrics": {
+        "revenue": {
+          "tag": "Revenues",
+          "unit": "USD",
+          "value": 28236000000,
+          "yoyPct": 0.25515647226173543,
+          "priorValue": 22496000000
+        },
+        "netIncome": {
+          "tag": "NetIncomeLoss",
+          "unit": "USD",
+          "value": 1114000000,
+          "yoyPct": -0.04948805460750853,
+          "priorValue": 1172000000
+        },
+        "dilutedEps": {
+          "tag": "EarningsPerShareDiluted",
+          "unit": "USD/shares",
+          "value": 0.32,
+          "yoyPct": -0.030303030303030328,
+          "priorValue": 0.33
+        },
+        "totalAssets": {
+          "tag": "Assets",
+          "unit": "USD",
+          "value": 148524000000,
+          "yoyPct": null,
+          "priorValue": null
+        },
+        "grossMarginPct": {
+          "tag": "GrossProfit",
+          "unit": "fraction",
+          "value": 0.16826037682391273,
+          "yoyPct": -0.004125825167552416,
+          "priorValue": 0.17238620199146515
+        },
+        "operatingIncome": {
+          "tag": "OperatingIncomeLoss",
+          "unit": "USD",
+          "value": 398000000,
+          "yoyPct": -0.5687973997833152,
+          "priorValue": 923000000
+        },
+        "totalLiabilities": {
+          "tag": "Liabilities",
+          "unit": "USD",
+          "value": 61005000000,
+          "yoyPct": null,
+          "priorValue": null
+        }
+      },
+      "filedDate": "2026-07-23",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm",
+      "periodEnd": "2026-06-30",
+      "companyName": "Tesla, Inc.",
+      "historyKind": "quarterly",
+      "accessionNumber": "0001628280-26-049270"
+    },
+    "summaryNote": null
+  }
+}

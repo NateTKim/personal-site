@@ -1,0 +1,252 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* ---------------------------------------------------------------------------
+   Design tokens — copied from Orin (github.com/NateTKim/Orin, app/globals.css)
+   so this site reads as Orin's sibling. Raw scales live in @theme; semantic
+   shadcn tokens in :root map onto them. Light only, like Orin.
+--------------------------------------------------------------------------- */
+
+@theme {
+  --color-brand-50: oklch(0.972 0.012 266);
+  --color-brand-100: oklch(0.945 0.028 266);
+  --color-brand-200: oklch(0.89 0.058 266);
+  --color-brand-300: oklch(0.81 0.095 266);
+  --color-brand-400: oklch(0.71 0.14 266);
+  --color-brand-500: oklch(0.62 0.17 266);
+  --color-brand-600: oklch(0.545 0.19 266); /* ≈ #3b64dd — the Orin blue */
+  --color-brand-700: oklch(0.47 0.17 267);
+  --color-brand-800: oklch(0.41 0.14 267);
+  --color-brand-900: oklch(0.36 0.11 267);
+  --color-brand-950: oklch(0.27 0.075 267);
+
+  --color-sand-50: oklch(0.985 0.006 80); /* ≈ #fcfaf6 — page background */
+  --color-sand-100: oklch(0.965 0.008 80);
+  --color-sand-200: oklch(0.925 0.01 80);
+  --color-sand-300: oklch(0.87 0.012 78);
+  --color-sand-400: oklch(0.7 0.015 75);
+  --color-sand-500: oklch(0.55 0.016 70); /* muted text — 4.7:1 on sand-50 */
+  --color-sand-600: oklch(0.51 0.016 65);
+  --color-sand-700: oklch(0.44 0.015 60);
+  --color-sand-800: oklch(0.34 0.014 55);
+  --color-sand-900: oklch(0.25 0.012 50); /* body text */
+  --color-sand-950: oklch(0.19 0.01 45);
+
+  --color-up: oklch(0.52 0.12 150);
+  --color-down: oklch(0.55 0.19 27);
+
+  --shadow-card: 0 1px 2px oklch(0.25 0.02 60 / 4%), 0 4px 16px -4px oklch(0.25 0.02 60 / 7%);
+  --shadow-card-lg: 0 2px 4px oklch(0.25 0.02 60 / 4%), 0 16px 40px -12px oklch(0.25 0.02 60 / 14%);
+
+  --font-display: var(--font-serif), ui-serif, Georgia, serif;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-heading: var(--font-sans);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  color-scheme: light;
+  --background: var(--color-sand-50);
+  --foreground: var(--color-sand-900);
+  --card: oklch(0.998 0.002 85);
+  --card-foreground: var(--color-sand-900);
+  --popover: oklch(0.998 0.002 85);
+  --popover-foreground: var(--color-sand-900);
+  --primary: var(--color-brand-600);
+  --primary-foreground: oklch(0.99 0.005 266);
+  --secondary: var(--color-sand-100);
+  --secondary-foreground: var(--color-sand-800);
+  --muted: var(--color-sand-100);
+  --muted-foreground: var(--color-sand-500);
+  --accent: var(--color-brand-50);
+  --accent-foreground: var(--color-brand-700);
+  --destructive: var(--color-down);
+  --border: var(--color-sand-200);
+  --input: var(--color-sand-300);
+  --ring: oklch(0.545 0.19 266 / 45%);
+  --chart-1: var(--color-brand-600);
+  --chart-2: var(--color-up);
+  --chart-3: oklch(0.78 0.13 75);
+  --chart-4: var(--color-brand-300);
+  --chart-5: var(--color-sand-400);
+  --radius: 0.75rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Hero backdrop: a sunrise wash using Orin's .orin-sunrise color stops
+   (rose 355, peach 30/50, cornflower 266), ordered pink → peach → pale
+   lavender-blue. Two oversized layers drift very slowly (transform only, so
+   it stays on the compositor). Static when reduced motion is requested.
+--------------------------------------------------------------------------- */
+.sunrise {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    oklch(0.93 0.045 355 / 85%) 0%,
+    oklch(0.94 0.05 30 / 75%) 34%,
+    oklch(0.95 0.045 50 / 55%) 58%,
+    oklch(0.93 0.04 266 / 45%) 82%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+}
+.sunrise::before,
+.sunrise::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+}
+.sunrise::before {
+  background:
+    radial-gradient(38% 30% at 22% 30%, oklch(0.9 0.06 355 / 70%), transparent 70%),
+    radial-gradient(36% 28% at 78% 26%, oklch(0.92 0.07 45 / 70%), transparent 70%);
+}
+.sunrise::after {
+  background:
+    radial-gradient(40% 30% at 62% 62%, oklch(0.9 0.05 266 / 55%), transparent 70%),
+    radial-gradient(30% 24% at 30% 70%, oklch(0.93 0.06 30 / 50%), transparent 70%);
+}
+
+/* ---------------------------------------------------------------------------
+   Expandable rows (<details>): native, so they work with JS off. The open
+   animation is CSS-only and short (220ms), and skipped for reduced motion.
+--------------------------------------------------------------------------- */
+details.expand > summary {
+  list-style: none;
+  cursor: pointer;
+}
+details.expand > summary::-webkit-details-marker {
+  display: none;
+}
+details.expand .expand-icon {
+  transition: transform 200ms ease;
+}
+details.expand[open] .expand-icon {
+  transform: rotate(45deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Stripe-style slow drift for the hero wash. */
+  @keyframes sunrise-drift-a {
+    from {
+      transform: translate3d(-4%, -2%, 0) rotate(0deg);
+    }
+    to {
+      transform: translate3d(4%, 3%, 0) rotate(8deg);
+    }
+  }
+  @keyframes sunrise-drift-b {
+    from {
+      transform: translate3d(3%, 2%, 0) rotate(0deg);
+    }
+    to {
+      transform: translate3d(-4%, -3%, 0) rotate(-6deg);
+    }
+  }
+  .sunrise::before {
+    animation: sunrise-drift-a 26s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+  .sunrise::after {
+    animation: sunrise-drift-b 32s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
+  /* Demo frame's starting pose before Motion hydrates (see demo-frame.tsx).
+     Motion's inline transform takes over from here. */
+  html.motion-ok .demo-frame {
+    transform: scale(0.7) rotateX(16deg);
+  }
+  @media (max-width: 767px) {
+    html.motion-ok .demo-frame {
+      transform: scale(0.88) rotateX(8deg);
+    }
+  }
+
+  /* Opening a <details> row: height eases open where supported. */
+  :root {
+    interpolate-size: allow-keywords;
+  }
+  details.expand::details-content {
+    block-size: 0;
+    overflow-y: clip;
+    transition:
+      block-size 220ms ease,
+      content-visibility 220ms allow-discrete;
+  }
+  details.expand[open]::details-content {
+    block-size: auto;
+  }
+
+  /* Light scroll reveals (Wealthfront-style). Elements are only hidden once
+     the RevealObserver has started (html.reveal-on), so with JS off or
+     before hydration everything is simply visible. 260ms, opacity + 8px. */
+  html.reveal-on [data-reveal]:not([data-in]) {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  html.reveal-on [data-reveal] {
+    transition:
+      opacity 260ms ease-out,
+      transform 260ms ease-out;
+  }
+}

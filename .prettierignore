@@ -1,0 +1,9 @@
+# Copied verbatim from the Orin repo; keep byte-identical.
+components/ui/
+lib/utils.ts
+lib/orin/types.ts
+lib/orin/format.ts
+lib/orin/score.ts
+lib/orin/colors.ts
+lib/orin/api-types.ts
+content/orin-demo/

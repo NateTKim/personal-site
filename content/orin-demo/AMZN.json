@@ -1,0 +1,127 @@
+{
+  "exportedAt": "2026-11-14T06:27:01.721Z",
+  "source": {
+    "table": "cached_filings",
+    "accessionNumber": "0001018724-26-000014",
+    "form": "10-Q",
+    "periodEnd": "2026-03-31",
+    "cachedAt": "2026-07-25T19:32:40.663208+00:00"
+  },
+  "result": {
+    "ok": true,
+    "summary": "Amazon reported strong results for the first three months of 2026. The company brought in $181.52 billion in revenue, up +16.6% from the same period last year. Net income came in at $30.25 billion, a big jump of +76.7% compared to a year ago. Diluted EPS (profit earned per share) rose to $2.78, up +74.8% year over year. Operating income (profit from day-to-day business) reached $23.85 billion, up +29.6%. All three of Amazon's main business segments — North America retail, International retail, and AWS (its cloud computing arm) — grew during the quarter.\n\nIt is worth noting that a large portion of the net income jump came from outside the core business. Amazon holds a big stake in Anthropic, an AI company, and the value of that investment rose sharply during the quarter, adding a very large gain to the \"other income\" line. This means the profit figure looks much bigger than what the everyday retail and cloud operations produced on their own. AWS continued to be a standout, growing faster than the retail side, and gross margin (the share of revenue left after the direct cost of goods and services) ticked up slightly to 51.8% from 50.6% a year ago.\n\nNotable changes\n- Revenue grew +16.6% year over year, rising to $181.52 billion from $155.67 billion\n- Net income surged +76.7% to $30.25 billion, compared to $17.13 billion in the same quarter last year\n- Diluted EPS increased +74.8% to $2.78, up from $1.59 a year ago\n- Operating income rose +29.6% to $23.85 billion, and gross margin improved by +1.3 percentage points to 51.8%\n\nWhat management may be downplaying\n\n- The huge net income gain appears to rest heavily on a paper increase in the value of Amazon's Anthropic investment rather than operating results — management discusses this in the notes but gives it relatively little prominence in the overall narrative, even though the related tax bill was also very large\n- Amazon raised a very large amount of new long-term debt in March 2026 and also made a large commitment to invest further in OpenAI, adding to already substantial future obligations; the filing notes these matter-of-factly but the sheer scale of new borrowing and investment commitments may deserve closer attention from readers\n- Active tax disputes in multiple countries — including a specific challenge by Luxembourg tax authorities over how Amazon valued certain intangible assets, and a separate dispute with Indian tax authorities over cloud services fees — are mentioned in the notes and may result in significant cash payments; management says it expects to prevail, but outcomes are described as uncertain",
+    "snapshot": {
+      "cik": "0001018724",
+      "form": "10-Q",
+      "ticker": "AMZN",
+      "history": [
+        {
+          "eps": 1.26,
+          "revenue": 147977000000,
+          "periodEnd": "2024-06-30",
+          "revenueDerived": false
+        },
+        {
+          "eps": 1.43,
+          "revenue": 158877000000,
+          "periodEnd": "2024-09-30",
+          "revenueDerived": false
+        },
+        {
+          "eps": null,
+          "revenue": 187792000000,
+          "periodEnd": "2024-12-31",
+          "revenueDerived": true
+        },
+        {
+          "eps": 1.59,
+          "revenue": 155667000000,
+          "periodEnd": "2025-03-31",
+          "revenueDerived": false
+        },
+        {
+          "eps": 1.68,
+          "revenue": 167702000000,
+          "periodEnd": "2025-06-30",
+          "revenueDerived": false
+        },
+        {
+          "eps": 1.95,
+          "revenue": 180169000000,
+          "periodEnd": "2025-09-30",
+          "revenueDerived": false
+        },
+        {
+          "eps": null,
+          "revenue": 213386000000,
+          "periodEnd": "2025-12-31",
+          "revenueDerived": true
+        },
+        {
+          "eps": 2.78,
+          "revenue": 181519000000,
+          "periodEnd": "2026-03-31",
+          "revenueDerived": false
+        }
+      ],
+      "metrics": {
+        "revenue": {
+          "tag": "RevenueFromContractWithCustomerExcludingAssessedTax",
+          "unit": "USD",
+          "value": 181519000000,
+          "yoyPct": 0.16607244952366268,
+          "priorValue": 155667000000
+        },
+        "netIncome": {
+          "tag": "NetIncomeLoss",
+          "unit": "USD",
+          "value": 30255000000,
+          "yoyPct": 0.766509020844281,
+          "priorValue": 17127000000
+        },
+        "dilutedEps": {
+          "tag": "EarningsPerShareDiluted",
+          "unit": "USD/shares",
+          "value": 2.78,
+          "yoyPct": 0.7484276729559747,
+          "priorValue": 1.59
+        },
+        "totalAssets": {
+          "tag": "Assets",
+          "unit": "USD",
+          "value": 916630000000,
+          "yoyPct": null,
+          "priorValue": null
+        },
+        "grossMarginPct": {
+          "tag": "RevenueFromContractWithCustomerExcludingAssessedTax - CostOfGoodsAndServicesSold",
+          "unit": "fraction",
+          "value": 0.5181606333221316,
+          "yoyPct": 0.01265207980725691,
+          "priorValue": 0.5055085535148747
+        },
+        "operatingIncome": {
+          "tag": "OperatingIncomeLoss",
+          "unit": "USD",
+          "value": 23852000000,
+          "yoyPct": 0.29595218690573216,
+          "priorValue": 18405000000
+        },
+        "totalLiabilities": {
+          "tag": null,
+          "unit": null,
+          "value": null,
+          "yoyPct": null,
+          "priorValue": null
+        }
+      },
+      "filedDate": "2026-04-30",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000014/amzn-20260331.htm",
+      "periodEnd": "2026-03-31",
+      "companyName": "AMAZON COM INC",
+      "historyKind": "quarterly",
+      "accessionNumber": "0001018724-26-000014"
+    },
+    "summaryNote": null
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "exportedAt": "2026-11-14T06:27:01.718Z",
+  "source": {
+    "table": "cached_filings",
+    "accessionNumber": "0001045810-26-000052",
+    "form": "10-Q",
+    "periodEnd": "2026-04-26",
+    "cachedAt": "2026-07-05T01:47:39.146546+00:00"
+  },
+  "result": {
+    "ok": true,
+    "summary": "NVIDIA reported an exceptionally strong quarter, bringing in $81.61 billion in revenue — up +85.2% from the same period a year ago. The company turned that money into $58.32 billion in net income (profit after all costs and taxes), up +210.6% from last year. Diluted EPS (profit earned per share) came in at $2.39, up +214.5% year over year. NVIDIA's business is driven overwhelmingly by its Data Center products, which power artificial intelligence systems around the world. The company also carries $259.47 billion in total assets against $64.00 billion in total liabilities, meaning it owns far more than it owes.\n\nThe company's profitability jumped sharply, not just because of higher sales but because it is making more money on each dollar it earns. Gross margin (the share of revenue left after the direct cost of making products) rose to 74.9%, up from 60.5% a year ago — a gain of +14.4 percentage points. Operating income (profit from day-to-day business) reached $53.54 billion, up +147.4%. NVIDIA is also returning large sums of money to shareholders through stock buybacks and recently announced a major increase in its quarterly dividend.\n\nNotable changes\n- Revenue grew +85.2% year over year, from $44.06 billion to $81.61 billion\n- Net income surged +210.6%, from $18.77 billion to $58.32 billion\n- Diluted EPS rose +214.5%, from $0.76 to $2.39\n- Gross margin expanded by +14.4 percentage points, reaching 74.9%\n\nWhat management may be downplaying\n- China revenues appear to have fallen sharply as a share of total sales, and the filing notes that NVIDIA is now effectively locked out of China's data center computing market due to U.S. export controls — and that China's antitrust regulators have issued a preliminary finding that NVIDIA's export-control-driven product limitations may have violated the terms of its Mellanox acquisition approval, which could result in financial penalties or restrictions on its networking business\n- NVIDIA has entered into enormous purchase commitments for manufacturing supply that run into the hundreds of billions of dollars over the coming years, meaning if customer demand slows or shifts, the company could face large charges for inventory or obligations it cannot cancel — the filing quietly acknowledges that excess inventory purchase obligation charges remain on the balance sheet\n- Three direct customers together appear to account for more than half of total revenue, revealing a high concentration of sales among a very small number of buyers — if any one of those customers pulls back orders or develops competing in-house chips, revenue could be meaningfully affected",
+    "snapshot": {
+      "cik": "0001045810",
+      "form": "10-Q",
+      "ticker": "NVDA",
+      "history": [
+        {
+          "eps": 0.67,
+          "revenue": 30040000000,
+          "periodEnd": "2024-07-28",
+          "revenueDerived": false
+        },
+        {
+          "eps": 0.78,
+          "revenue": 35082000000,
+          "periodEnd": "2024-10-27",
+          "revenueDerived": false
+        },
+        {
+          "eps": null,
+          "revenue": 39331000000,
+          "periodEnd": "2025-01-26",
+          "revenueDerived": true
+        },
+        {
+          "eps": 0.76,
+          "revenue": 44062000000,
+          "periodEnd": "2025-04-27",
+          "revenueDerived": false
+        },
+        {
+          "eps": 1.08,
+          "revenue": 46743000000,
+          "periodEnd": "2025-07-27",
+          "revenueDerived": false
+        },
+        {
+          "eps": 1.3,
+          "revenue": 57006000000,
+          "periodEnd": "2025-10-26",
+          "revenueDerived": false
+        },
+        {
+          "eps": null,
+          "revenue": 68127000000,
+          "periodEnd": "2026-01-25",
+          "revenueDerived": true
+        },
+        {
+          "eps": 2.39,
+          "revenue": 81615000000,
+          "periodEnd": "2026-04-26",
+          "revenueDerived": false
+        }
+      ],
+      "metrics": {
+        "revenue": {
+          "tag": "Revenues",
+          "unit": "USD",
+          "value": 81615000000,
+          "yoyPct": 0.8522763378875221,
+          "priorValue": 44062000000
+        },
+        "netIncome": {
+          "tag": "NetIncomeLoss",
+          "unit": "USD",
+          "value": 58321000000,
+          "yoyPct": 2.106311584553928,
+          "priorValue": 18775000000
+        },
+        "dilutedEps": {
+          "tag": "EarningsPerShareDiluted",
+          "unit": "USD/shares",
+          "value": 2.39,
+          "yoyPct": 2.1447368421052633,
+          "priorValue": 0.76
+        },
+        "totalAssets": {
+          "tag": "Assets",
+          "unit": "USD",
+          "value": 259474000000,
+          "yoyPct": null,
+          "priorValue": null
+        },
+        "grossMarginPct": {
+          "tag": "GrossProfit",
+          "unit": "fraction",
+          "value": 0.749335293757275,
+          "yoyPct": 0.1440972201337446,
+          "priorValue": 0.6052380736235304
+        },
+        "operatingIncome": {
+          "tag": "OperatingIncomeLoss",
+          "unit": "USD",
+          "value": 53536000000,
+          "yoyPct": 1.4741658193918108,
+          "priorValue": 21638000000
+        },
+        "totalLiabilities": {
+          "tag": "Liabilities",
+          "unit": "USD",
+          "value": 64000000000,
+          "yoyPct": null,
+          "priorValue": null
+        }
+      },
+      "filedDate": "2026-05-20",
+      "filingUrl": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000052/nvda-20260426.htm",
+      "periodEnd": "2026-04-26",
+      "companyName": "NVIDIA CORP",
+      "historyKind": "quarterly"
+    },
+    "summaryNote": null
+  }
+}
