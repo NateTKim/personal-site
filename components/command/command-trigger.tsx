@@ -50,7 +50,7 @@ export function CommandTrigger() {
         onFocus={() => setLoaded(true)}
         aria-haspopup="dialog"
         aria-keyshortcuts="Meta+K Control+K"
-        className="inline-flex h-9 items-center gap-2 rounded-full border border-border bg-card px-3 text-sm text-sand-700 shadow-card transition-colors hover:bg-sand-100 hover:text-foreground"
+        className="js-only inline-flex h-9 items-center gap-2 rounded-full border border-border bg-card px-3 text-sm text-sand-700 shadow-card transition-colors hover:bg-sand-100 hover:text-foreground"
       >
         <Search className="size-3.5" aria-hidden />
         <span className="sm:hidden">Menu</span>

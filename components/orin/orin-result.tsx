@@ -120,7 +120,7 @@ export function OrinResult({ data }: { data: FilingApiSuccess }) {
                     <RevenueChart history={snapshot.history} />
                   </LazyWhenVisible>
                   {/* Text version of the chart for screen readers and no-JS. */}
-                  <table className="sr-only">
+                  <table className="nojs-visible sr-only w-full text-left text-sm tabular-nums">
                     <caption>Revenue by period</caption>
                     <thead>
                       <tr>

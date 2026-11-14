@@ -155,7 +155,7 @@ export function OrinDemo({ samples }: { samples: Record<DemoTicker, DemoSample> 
             id="orin-demo-result"
             className={cn(
               "demo-result flex flex-col gap-6",
-              !expanded && "max-h-[52rem] overflow-hidden @4xl:max-h-[56rem]",
+              !expanded && "max-h-[62rem] overflow-hidden @4xl:max-h-[56rem]",
             )}
           >
             {view.kind === "sample" && sample && <OrinResult data={sample.result} />}

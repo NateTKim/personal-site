@@ -188,7 +188,7 @@ export const writing: Writing[] = [
     linkLabel: "Read it (full issue PDF, page 23)",
   },
   {
-    // [R] Capital Management Club. Deck link deliberately omitted (see README).
+    // [R] Capital Management Club. Deck link deliberately omitted for now.
     title: "Chewy (NYSE: CHWY) equity research",
     kind: "Equity research",
     venue: "Capital Management Club, UW-Madison · 2026",

@@ -38,6 +38,10 @@ export const viewport: Viewport = {
 // reduced motion) the class is never added and everything renders flat.
 const motionFlag = `try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('motion-ok')}catch(e){}`;
 
+// With JS off: hide controls that only work with JS, and turn screen-reader
+// text fallbacks (chart data tables) into visible content.
+const noJsCss = `.js-only{display:none!important}.nojs-visible{position:static!important;width:auto!important;height:auto!important;clip:auto!important;clip-path:none!important;overflow:visible!important;white-space:normal!important;margin:0!important}`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -47,6 +51,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: motionFlag }} />
+        <noscript>
+          <style>{noJsCss}</style>
+        </noscript>
       </head>
       <body className="flex min-h-full flex-col">
         <a

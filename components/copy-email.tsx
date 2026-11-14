@@ -26,7 +26,7 @@ export function CopyEmail() {
       <button
         type="button"
         onClick={onClick}
-        className="inline-flex h-11 items-center gap-2 rounded-full border border-border bg-card px-5 text-[15px] font-medium text-foreground transition-colors hover:bg-sand-100"
+        className="js-only inline-flex h-11 items-center gap-2 rounded-full border border-border bg-card px-5 text-[15px] font-medium text-foreground transition-colors hover:bg-sand-100"
       >
         {state === "copied" ? (
           <Check className="size-4 text-up" aria-hidden />

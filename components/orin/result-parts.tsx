@@ -109,7 +109,7 @@ export function HealthCard({
         >
           <div className="flex items-baseline gap-1">
             <span className="font-display text-4xl font-medium text-foreground tabular-nums">{score}</span>
-            <span className="text-sm text-muted-foreground">{outOf}</span>
+            <span className="text-sm text-sand-700">{outOf}</span>
           </div>
           <span className={cn("mt-0.5 text-sm font-semibold", accent.text)}>{label}</span>
         </div>
@@ -223,7 +223,7 @@ export function StatCard({
         ) : (
           <span
             className={cn(
-              "text-xl font-bold tracking-tight tabular-nums @lg:text-2xl",
+              "text-lg font-bold tracking-tight tabular-nums @sm:text-xl @lg:text-2xl",
               emphasizeChangeColor && change !== null && changeColor,
             )}
           >

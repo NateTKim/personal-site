@@ -1,0 +1,119 @@
+import { ArchitectureDiagram } from "@/components/case-study/architecture";
+import { Screenshot } from "@/components/case-study/screenshot";
+
+export const metadata = {
+  title: "Orin case study",
+  description:
+    "How Orin turns SEC filings into plain English without letting the AI invent a number: architecture, key decisions, testing and hardening.",
+};
+
+{/*
+  Sources: Nate's resume (Projects → Orin), the build brief's Orin facts, and
+  the Orin repo (github.com/NateTKim/Orin @ 08fe650). No other facts.
+*/}
+
+<p className="text-sm font-medium text-brand-700">Case study · Founder and full-stack developer · May 2026 – present</p>
+
+# Orin
+
+{/* One line on purpose: multi-line JSX children get wrapped in a nested <p> by MDX. */}
+<p className="mt-6 text-xl leading-9 text-sand-800">Orin takes a stock ticker, reads the company&apos;s latest 10-Q or 10-K from SEC EDGAR, and explains it in plain English. Every number on the page comes from the filing. The AI writes the words around them.</p>
+
+<Screenshot
+  file="results.png"
+  alt="Orin's results page for one company: header, Business Health score, What most people miss, key numbers and revenue trend"
+  caption="A results page. The homepage of this site runs the same layout on real cached output."
+/>
+
+## Why it exists
+
+I built Orin for people who own a stock but have never read the company's filings. The filing is
+where the real numbers are, but they're hard to get at. The XBRL tags behind them vary from company to
+company, and the most useful parts of the text sit in risk factors and footnotes.
+
+AI summaries looked like the obvious fix, and also the obvious risk. A model that rounds a revenue
+figure or makes one up is worse than no summary at all. So the rule from day one was that **the AI
+never produces a number.**
+
+## What it does
+
+- Finds the company's latest 10-Q or 10-K on EDGAR.
+- Extracts seven metrics: revenue, net income, diluted EPS, operating income, gross margin, total
+  assets and total liabilities, with year-over-year changes where they apply.
+- Writes a plain-English summary around those figures, plus **What most people miss**: risks the
+  filing mentions quietly.
+- Scores **Business Health** from 1 to 10.
+- Shows "not reported" for anything the company didn't report.
+
+It explains filings. It never gives buy or sell advice.
+
+## Architecture
+
+Next.js App Router and TypeScript on Vercel, Tailwind and shadcn/ui for the interface, Recharts for the
+revenue trend, the Claude API for prose, SEC EDGAR's XBRL APIs for data, Supabase (Postgres with
+row-level security) for storage and Clerk for sign-in.
+
+<ArchitectureDiagram />
+
+## Key decisions
+
+### Numbers in, prose out
+
+Before the model sees anything, the extracted figures are formatted into exact strings: "$109.42
+billion", "+16.4%". The prompt says those strings are the only numbers it may use, copied as written.
+After it responds, a check pulls every number out of the summary and compares it with that allowed set.
+If even one doesn't match, Orin withholds the whole summary and shows the extracted figures on their
+own. A summary that fails the check is never cached.
+
+### Business Health without an LLM
+
+The score is arithmetic. Six signals (revenue growth, revenue trend, margin direction, profitability,
+operating income trajectory and leverage) are each normalized, weighted and mapped to 1-10. The same
+filing always gets the same score, and every factor shown comes from an extracted figure. If too
+few signals can be computed, Orin says there isn't enough data instead of showing a misleading score.
+
+### Cache by accession number
+
+Every SEC filing has a unique accession number. Orin's first step is a cheap EDGAR lookup that returns
+the latest filing's number, and the cache is keyed on it. When a company files something new, the
+number changes and the cache misses on its own. There's no expiry time to tune. A hit skips the
+company facts, the filing text and the AI call entirely.
+
+### Tag fallbacks, and a calculated fourth quarter
+
+Companies label the same figure differently, so each metric has an ordered list of XBRL tags to try.
+Banks report revenue under a different tag than retailers, and REITs report net income under another.
+Companies also file no 10-Q for their fourth fiscal quarter, so the revenue chart computes that
+quarter as the annual total minus the three reported quarters and labels it "calculated."
+
+## Testing
+
+I correctness-tested Orin on five filer types that report in different shapes: Apple, JPMorgan,
+Walmart, Rivian and Realty Income. A bank and a REIT break assumptions that hold for Apple and Walmart,
+which is the point. A verification script runs all five end to end: it extracts the figures, downloads
+the actual filing from sec.gov, and confirms every extracted value appears in the document as
+presented. That catches a wrong tag or a wrong period.
+
+<Screenshot
+  file="health.png"
+  alt="Orin's Business Health card showing a 1-10 score, a label, and the factors behind it"
+  caption="Business Health: a score, a label, and the factors behind it."
+/>
+
+## Hardening
+
+An uncached lookup costs real money: a large filing excerpt goes to the Claude API. So the expensive
+path is guarded.
+
+- **Server-side validation.** Tickers are checked against a strict pattern before any outside call.
+- **Per-IP rate limiting.** The limit applies only to cache misses, so normal browsing never hits it.
+- **Request de-duplication.** Concurrent requests for the same uncached filing share one in-flight
+  analysis, so two visitors can't trigger two AI calls for one filing.
+- **One EDGAR client.** Every request carries the User-Agent the SEC requires and is spaced to stay
+  under EDGAR's limit of 10 requests per second.
+- **Row-level security.** Users can only read their own saved stocks. The shared cache has row-level
+  security with no policies, so only the server can touch it.
+- **Graceful failure.** A cache error becomes a miss, and a failed summary still shows the numbers.
+
+The code is public on [GitHub](https://github.com/NateTKim/Orin), and you can try it at
+[readorin.com](https://readorin.com), or [on this site's homepage](/#orin) with four real samples.

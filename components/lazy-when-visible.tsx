@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
 
 /**
  * Renders `children` only once the placeholder is near the viewport, so
@@ -36,5 +37,5 @@ export function LazyWhenVisible({
   }, [rootMargin]);
 
   if (visible) return <>{children}</>;
-  return <div ref={ref} className={placeholderClassName} aria-hidden />;
+  return <div ref={ref} className={cn("js-only", placeholderClassName)} aria-hidden />;
 }
