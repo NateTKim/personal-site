@@ -7,8 +7,8 @@ export const profile = {
   name: "Nate Kim", // [N] the name he goes by
   legalName: "Nathanael Kim", // [M] Header
   // [M] Education: BBA Finance, Investment & Banking + additional major in Computer Science,
-  // University of Wisconsin-Madison. Short form worded by [N].
-  roleLine: "Finance & CS, UW-Madison",
+  // University of Wisconsin–Madison. Short form worded by [N].
+  roleLine: "Finance & CS, UW–Madison",
   email: "nathanaelkim11@gmail.com", // [M] Header
   linkedin: "https://www.linkedin.com/in/natekim0", // [M] Header
   github: "https://github.com/NateTKim", // [N]
@@ -22,7 +22,7 @@ export const profile = {
 export const hero = {
   lead: "I write code, run teams & ",
   italic: "read balance sheets.",
-  sub: "Finance and computer science at UW-Madison. Software Engineer Intern at Alphaeon Credit, summer 2026.",
+  sub: "Finance and computer science at UW–Madison. Software Engineer Intern at Alphaeon Credit, summer 2026.",
 } as const;
 
 // [N] The intro card's two lines, worded by the lead (2026-11-20). Line 2 is a short form of
@@ -30,5 +30,5 @@ export const hero = {
 export const intro = {
   lead: "Hi, I’m ",
   italic: "Nate.",
-  sub: "Finance & Computer Science · UW-Madison",
+  sub: "Finance & Computer Science · UW–Madison",
 } as const;

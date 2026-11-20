@@ -69,7 +69,7 @@ export const photos: readonly InfoPhoto[] = [
 // typographic. One paragraph, one sentence per line.
 export const about = {
   text: [
-    "I’m a junior at UW-Madison studying finance and computer science, and I’m most interested in where business and technology meet.",
+    "I’m a junior at UW–Madison studying finance and computer science, and I’m most interested in where business and technology meet.",
     "I’m president of CodeForGood, a project-based club where student teams build software for nonprofits.",
     "In summer 2026 I was a software engineering intern at Alphaeon Credit, a healthcare fintech company.",
     "Outside of school and work, I’m usually playing basketball.",
