@@ -50,3 +50,6 @@ next-env.d.ts
 
 # Original photos (may carry EXIF/GPS). Only stripped web copies in public/info/ ship.
 /content/photos/
+
+# Builder agent notes (quote the master's notes to Nate). Local only, never pushed.
+/.claude/agents/
