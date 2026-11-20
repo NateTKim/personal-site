@@ -442,6 +442,48 @@ details.expand[open] .expand-icon {
 }
 
 /* ---------------------------------------------------------------------------
+   Intro card (components/site/intro-card.tsx). Hidden unless html.intro is set,
+   which the pre-paint script in app/layout.tsx does on the first full load of a
+   browser session only: never with JS off or reduced motion, never on a
+   client-side navigation. Timed from the first paint: the text rises in (200ms),
+   holds until 650ms, then the card fades out in 250ms (html.intro-out), passing
+   all input through while it fades; at 900ms it is gone. Fixed and out of
+   flow, so nothing under it moves.
+--------------------------------------------------------------------------- */
+.intro-card {
+  display: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html.intro .intro-card {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+    text-align: center;
+    /* The page's own background and vignette, so the fade only reveals content. */
+    background:
+      radial-gradient(90% 60% at 50% 0%, var(--vignette-light), transparent 70%),
+      radial-gradient(140% 110% at 50% 45%, transparent 55%, var(--vignette-edge) 100%), var(--background);
+  }
+  html.intro .intro-card-text {
+    animation: intro-rise 200ms ease-out both;
+  }
+  html.intro-out .intro-card {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 250ms ease-out;
+  }
+}
+@keyframes intro-rise {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
    Orin's semantic tokens, scoped. Only inside .orin-theme (the body of the Orin
    demo's window frame on /work/orin) do the shared utilities (bg-background,
    text-primary, font-display…) resolve to Orin's light sand-and-blue look.

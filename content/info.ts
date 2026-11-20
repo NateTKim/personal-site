@@ -5,6 +5,10 @@
 // with a closing period added. Do not add a number, date, tool or outcome here without a
 // source tag.
 
+import type { StaticImageData } from "next/image";
+import nateImage1 from "@/public/info/nate_image_1.jpg";
+import nateImage2 from "@/public/info/nate_image_2.jpg";
+
 export type InfoBullet = {
   text: string;
   /** Set apart after the text, e.g. to say a figure is the platform's, not Nate's. */
@@ -36,22 +40,39 @@ export const headline = { lead: "Nathanael Kim. ", italic: "Nate, for short." } 
 export const infoDescription =
   "Nathanael (Nate) Kim: experience, projects, leadership, education, coursework, writing and skills.";
 
-/** Two photo slots, both waiting for Nate's photos. */
-export const photoSlots = [{ key: "photo-1" }, { key: "photo-2" }] as const;
+export type InfoPhoto = {
+  key: string;
+  src: StaticImageData;
+  alt: string;
+  /** CSS object-position that keeps Nate in frame if the slot crops the photo. */
+  position: string;
+};
 
-// A draft for Nate to rewrite, from these facts only:
-//   sentence 1: [M] Education (degree, additional major, expected May 2028, "GPA: 3.7/4.0 ·
-//   Dean's List"); sentence 2: [M] Experience › Alphaeon Credit (May 2026 – Aug 2026),
-//   Projects › Orin ("Founder") and Leadership & Activities › CodeForGood ("President");
-//   sentence 3: [N] likes working across business and technology; sentence 4: [N] has played
-//   basketball since second grade, and played varsity basketball and chess in high school.
+// [N] Nate's photos, 2026-11-20: privacy-safe web copies in public/info/ (EXIF stripped).
+// Never reference the originals in content/photos/. Alt text from the lead.
+export const photos: readonly InfoPhoto[] = [
+  {
+    key: "photo-1",
+    src: nateImage1,
+    alt: "Nate smiling on a suspension bridge walkway at sunset, with cables overhead and a river and city skyline in the background.",
+    position: "50% 45%", // centered, face about 45% down
+  },
+  {
+    key: "photo-2",
+    src: nateImage2,
+    alt: "Nate in a white cap and sunglasses, standing on a layered rock ledge above the sea under a hazy sky.",
+    position: "72% 62%", // small, on the rock ledge at the right
+  },
+];
+
+// [N] Nate's own About text, 2026-11-20. His words exactly; only the apostrophes are
+// typographic. One paragraph, one sentence per line.
 export const about = {
-  todo: "Nate rewrites this",
   text: [
-    "I’m working toward a Bachelor of Business Administration in Finance, Investment & Banking, with an additional major in Computer Science, at UW–Madison (expected May 2028; 3.7/4.0 GPA, Dean’s List).",
-    "I was a Software Engineer Intern at Alphaeon Credit from May to August 2026, and I’m the founder of Orin and President of CodeForGood.",
-    "I like working across business and technology.",
-    "I’ve played basketball since second grade, and in high school I played varsity basketball and chess.",
+    "I’m a junior at UW-Madison studying finance and computer science, and I’m most interested in where business and technology meet.",
+    "I’m president of CodeForGood, a project-based club where student teams build software for nonprofits.",
+    "In summer 2026 I was a software engineering intern at Alphaeon Credit, a healthcare fintech company.",
+    "Outside of school and work, I’m usually playing basketball.",
   ],
 } as const;
 

@@ -12,17 +12,19 @@ npm run build && npm start
 
 ## Where things live
 
-| What                                                            | Where                                                                                |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Every fact on the site, tagged with its source                  | `content/profile.ts`, `content/work.ts`, `content/stats.ts`, `content/work-pages.ts` |
-| Facts for `/info` (the resume page)                             | `content/info.ts`                                                                    |
-| Copy for the five `/work/<slug>` pages                          | `content/work-pages.ts` (template: `components/work/work-page.tsx`)                  |
-| The Orin demo's NATE easter egg (a joke built from the master)  | `content/nate-egg.ts`                                                                |
-| Colors: five palette tokens; everything else is mixed from them | the `PALETTE` block at the top of `app/globals.css`                                  |
-| Real Orin output for the demo (`/work/orin`)                    | `content/orin-demo/*.json`                                                           |
-| Orin screenshot on the home page                                | `public/orin/results.png`                                                            |
-| Public resume (phone and ZIP removed)                           | `public/Nathanael_Kim_Resume.pdf`                                                    |
-| Code copied from Orin (keep identical)                          | `lib/orin/*`, `components/ui/*`                                                      |
+| What                                                               | Where                                                                                |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| Every fact on the site, tagged with its source                     | `content/profile.ts`, `content/work.ts`, `content/stats.ts`, `content/work-pages.ts` |
+| Facts for `/info` (the resume page)                                | `content/info.ts`                                                                    |
+| Copy for the five `/work/<slug>` pages                             | `content/work-pages.ts` (template: `components/work/work-page.tsx`)                  |
+| The Orin demo's NATE easter egg (a joke built from the master)     | `content/nate-egg.ts`                                                                |
+| Colors: five palette tokens; everything else is mixed from them    | the `PALETTE` block at the top of `app/globals.css`                                  |
+| Real Orin output for the demo (`/work/orin`)                       | `content/orin-demo/*.json`                                                           |
+| Orin screenshot on the home page                                   | `public/orin/results.png`                                                            |
+| Photos on `/info` (EXIF-stripped web copies; originals never ship) | `public/info/*.jpg`, listed in `content/info.ts`                                     |
+| Intro card (first full load per browser session)                   | `components/site/intro-card.tsx`, timed by the pre-paint script in `app/layout.tsx`  |
+| Public resume (phone and ZIP removed)                              | `public/Nathanael_Kim_Resume.pdf`                                                    |
+| Code copied from Orin (keep identical)                             | `lib/orin/*`, `components/ui/*`                                                      |
 
 ## Rules for content
 

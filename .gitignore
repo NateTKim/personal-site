@@ -47,3 +47,6 @@ next-env.d.ts
 # Master resume: source of truth for facts, never pushed (contains phone and address).
 /content/master-resume.txt
 /content/master_resume.txt.txt
+
+# Original photos (may carry EXIF/GPS). Only stripped web copies in public/info/ ship.
+/content/photos/

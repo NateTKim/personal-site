@@ -24,3 +24,11 @@ export const hero = {
   italic: "read balance sheets.",
   sub: "Finance and computer science at UW-Madison. Software Engineer Intern at Alphaeon Credit, summer 2026.",
 } as const;
+
+// [N] The intro card's two lines, worded by the lead (2026-11-20). Line 2 is a short form of
+// [M] Education, like `roleLine` above.
+export const intro = {
+  lead: "Hi, I’m ",
+  italic: "Nate.",
+  sub: "Finance & Computer Science · UW-Madison",
+} as const;

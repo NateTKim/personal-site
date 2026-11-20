@@ -8,7 +8,7 @@ import {
   headline,
   infoDescription,
   leadership,
-  photoSlots,
+  photos,
   projects,
   skills,
   writing,
@@ -17,7 +17,6 @@ import { profile } from "@/content/profile";
 import { EntryHeader, EntryList, PhotoSlots, infoBody } from "@/components/info/info-parts";
 import { LabelSection } from "@/components/site/label-section";
 import { SiteHeader } from "@/components/site/site-header";
-import { Todo } from "@/components/site/todo";
 import { MetaSep } from "@/components/work/work-card";
 
 export const metadata: Metadata = {
@@ -45,15 +44,12 @@ export default function InfoPage() {
               {headline.lead}
               <span className="serif-italic">{headline.italic}</span>
             </h1>
-            <PhotoSlots count={photoSlots.length} />
+            <PhotoSlots photos={photos} />
           </header>
 
           <div className="mt-14 sm:mt-20">
             <LabelSection id="info-about" title="About">
-              <div className="flex flex-col items-start gap-4">
-                <Todo>{about.todo}</Todo>
-                <p className={infoBody}>{about.text.join(" ")}</p>
-              </div>
+              <p className={infoBody}>{about.text.join(" ")}</p>
             </LabelSection>
 
             <LabelSection id="info-experience" title="Experience">

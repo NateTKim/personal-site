@@ -1,7 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Info } from "lucide-react";
-import type { InfoEntry } from "@/content/info";
-import { Todo } from "@/components/site/todo";
+import type { InfoEntry, InfoPhoto } from "@/content/info";
 import { WindowFrame } from "@/components/site/window-frame";
 import { MetaSep } from "@/components/work/work-card";
 import { cn } from "@/lib/utils";
@@ -11,6 +11,23 @@ export const infoBody = "text-[16px] leading-relaxed text-muted-foreground sm:te
 /** The same dash marker as the /work pages' lists. */
 export const dashItem =
   "relative pl-6 before:absolute before:top-[0.8em] before:left-0 before:h-px before:w-3 before:bg-subtle-foreground";
+
+/**
+ * Renders `text` with `children` (an icon) bound to its last word in a no-wrap span,
+ * so the icon never wraps onto a line by itself. Breaks before the last word are unchanged.
+ */
+function KeepWithLastWord({ text, children }: { text: string; children: React.ReactNode }) {
+  const i = text.lastIndexOf(" ") + 1;
+  return (
+    <>
+      {text.slice(0, i)}
+      <span className="whitespace-nowrap">
+        {text.slice(i)}
+        {children}
+      </span>
+    </>
+  );
+}
 
 /**
  * An entry's heading block: the title (a link to its /work page when it has one),
@@ -41,12 +58,13 @@ export function EntryHeader({
             href={href}
             className="group/entry rounded-sm underline decoration-current/25 underline-offset-[5px] transition-[text-decoration-color] duration-150 hover:decoration-current"
           >
-            {title}
-            {hrefHint && <span className="sr-only">: {hrefHint}</span>}
-            <ArrowRight
-              className="ml-1.5 inline-block size-4 align-[-0.1em] text-muted-foreground transition-transform duration-200 group-hover/entry:translate-x-0.5 motion-reduce:transition-none"
-              aria-hidden
-            />
+            <KeepWithLastWord text={title}>
+              {hrefHint && <span className="sr-only">: {hrefHint}</span>}
+              <ArrowRight
+                className="ml-1.5 inline-block size-4 align-[-0.1em] text-muted-foreground transition-transform duration-200 group-hover/entry:translate-x-0.5 motion-reduce:transition-none"
+                aria-hidden
+              />
+            </KeepWithLastWord>
           </Link>
         ) : (
           title
@@ -81,8 +99,9 @@ export function EntryView({ entry }: { entry: InfoEntry }) {
             rel="noopener noreferrer"
             className="rounded-sm underline decoration-current/30 underline-offset-4 transition-colors duration-150 hover:text-foreground hover:decoration-current"
           >
-            {entry.location}
-            <ArrowUpRight className="ml-0.5 inline-block size-3.5 align-[-0.1em]" aria-hidden />
+            <KeepWithLastWord text={entry.location}>
+              <ArrowUpRight className="ml-0.5 inline-block size-3.5 align-[-0.1em]" aria-hidden />
+            </KeepWithLastWord>
             <span className="sr-only">(opens in a new tab)</span>
           </a>
         ) : (
@@ -119,25 +138,32 @@ export function EntryList({ entries }: { entries: readonly InfoEntry[] }) {
 }
 
 /**
- * Two small framed photo slots, offset like prints on a desk. No photos yet: each
- * holds a visible TODO. Kept small (4:3 on narrow screens, a short 4:5 beside the
- * headline from 1024px) so the page never reads as empty boxes.
+ * Two small framed photos, offset like prints on a desk from 1024px. The slots are 3:4,
+ * the photos' own shape, so nothing is cropped at any width; each photo's object-position
+ * still keeps Nate in frame should a slot ever crop. Above the fold, so not lazy-loaded.
  */
-export function PhotoSlots({ count }: { count: number }) {
+export function PhotoSlots({ photos }: { photos: readonly InfoPhoto[] }) {
   return (
     <div className="grid max-w-md grid-cols-2 gap-3 sm:gap-4 lg:max-w-none">
-      {Array.from({ length: count }, (_, i) => (
+      {photos.map((photo, i) => (
         <WindowFrame
-          key={i}
+          key={photo.key}
           size="sm"
           className={cn(i === 1 && "lg:translate-y-8")}
-          bodyClassName="relative grid aspect-[4/3] place-items-center lg:aspect-[4/5]"
+          bodyClassName="relative aspect-[3/4]"
         >
-          <span
-            aria-hidden
-            className="absolute inset-0 bg-[radial-gradient(120%_90%_at_30%_10%,var(--frame-highlight),transparent_60%)]"
+          <Image
+            src={photo.src}
+            alt={photo.alt}
+            fill
+            placeholder="blur"
+            loading="eager"
+            // A slot is half the row: the row is 28rem at most (12px gap below 640px,
+            // 16px from there) and, from 1024px, the 21rem column beside the headline.
+            sizes="(min-width: 1024px) 160px, (min-width: 480px) 218px, calc(50vw - 22px)"
+            className="object-cover"
+            style={{ objectPosition: photo.position }}
           />
-          <Todo className="relative">photo</Todo>
         </WindowFrame>
       ))}
     </div>
