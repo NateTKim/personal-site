@@ -1,7 +1,9 @@
 "use client";
 
-// Ported from the Orin repo (components/revenue-chart.tsx), unchanged except imports
-// and accessibilityLayer={false} (a text table sits next to it instead).
+// Ported from the Orin repo (components/revenue-chart.tsx), unchanged except imports,
+// accessibilityLayer={false} (a text table sits next to it instead) and shorter
+// animations: the site keeps every animation but the hero zoom under 300ms. Recharts
+// skips them entirely under prefers-reduced-motion (isAnimationActive defaults to "auto").
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { formatPerShare, formatUsd, formatUsdCompact } from "@/lib/orin/format";
 import type { HistoryPoint } from "@/lib/orin/types";
@@ -71,7 +73,11 @@ export default function RevenueChart({ history }: { history: HistoryPoint[] }) {
             tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
             domain={["auto", "auto"]}
           />
-          <Tooltip content={<ChartTooltip />} cursor={{ stroke: "var(--color-sand-300)" }} />
+          <Tooltip
+            content={<ChartTooltip />}
+            cursor={{ stroke: "var(--color-sand-300)" }}
+            animationDuration={200}
+          />
           <Area
             type="monotone"
             dataKey="revenue"
@@ -80,6 +86,7 @@ export default function RevenueChart({ history }: { history: HistoryPoint[] }) {
             fill="url(#revenueFill)"
             dot={false}
             activeDot={{ r: 4, strokeWidth: 0 }}
+            animationDuration={250}
           />
         </AreaChart>
       </ResponsiveContainer>

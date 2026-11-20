@@ -43,3 +43,7 @@ next-env.d.ts
 # Source resume: its file still contains an unused object with the old
 # header (phone + ZIP). Only the rebuilt copy in public/ is published.
 /content/*.pdf
+
+# Master resume: source of truth for facts, never pushed (contains phone and address).
+/content/master-resume.txt
+/content/master_resume.txt.txt

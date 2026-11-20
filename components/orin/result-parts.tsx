@@ -3,8 +3,9 @@
 // components/business-health.tsx). Markup and classes are Orin's; the only
 // changes are heading levels (h2→h3, h3→h4, to nest under this page's
 // section heading), container-query breakpoints (the screen lives inside a
-// browser frame, not a full viewport), and props instead of direct data
-// access so the NATE easter egg can reuse the same layout.
+// browser frame, not a full viewport), props instead of direct data access
+// so the NATE easter egg can reuse the same layout, and full-strength
+// muted text for the 11px hints (Orin fades them to 70%, under AA contrast).
 import { ArrowDownRight, ArrowUpRight, ExternalLink, Eye } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -92,7 +93,9 @@ export function HealthCard({
   accent: { text: string; tile: string; dot: string };
   timeframe: string;
   why: string;
-  factors: Array<Pick<HealthFactor, "direction" | "sentiment" | "label" | "detail"> & { key: string }>;
+  factors: ReadonlyArray<
+    Pick<HealthFactor, "direction" | "sentiment" | "label" | "detail"> & { key: string }
+  >;
   disclaimer: string;
 }) {
   return (
@@ -141,7 +144,7 @@ export function MissCard({
   caption = "Our AI's reading of the report's own wording — a starting point for questions, not a verdict.",
   empty,
 }: {
-  items: string[];
+  items: readonly string[];
   subtitle?: string;
   caption?: string;
   empty?: string;
@@ -230,7 +233,7 @@ export function StatCard({
             {value}
           </span>
         )}
-        <span className="text-[11px] leading-4 text-muted-foreground/70">{explain}</span>
+        <span className="text-[11px] leading-4 text-muted-foreground">{explain}</span>
       </CardContent>
     </Card>
   );
@@ -241,7 +244,7 @@ export function MoreNumbers({
   rows,
 }: {
   title?: string;
-  rows: Array<{ label: string; explain: string; value: string | null }>;
+  rows: ReadonlyArray<{ label: string; explain: string; value: string | null }>;
 }) {
   return (
     <Card className={cardShell}>
@@ -252,11 +255,11 @@ export function MoreNumbers({
             <div key={label} className="flex items-baseline justify-between gap-4 py-2.5">
               <dt className="flex flex-col">
                 <span className="text-sm text-foreground/80">{label}</span>
-                <span className="text-[11px] leading-4 text-muted-foreground/70">{explain}</span>
+                <span className="text-[11px] leading-4 text-muted-foreground">{explain}</span>
               </dt>
               <dd className="text-right text-sm font-medium tabular-nums">
                 {value === null ? (
-                  <span className="font-normal text-muted-foreground/70">not reported</span>
+                  <span className="font-normal text-muted-foreground">not reported</span>
                 ) : (
                   value
                 )}
@@ -275,8 +278,8 @@ export function PlainEnglish({
   notableTitle = "What changed since last year",
   empty,
 }: {
-  intro: string[];
-  notable: string[];
+  intro: readonly string[];
+  notable: readonly string[];
   notableTitle?: string;
   empty?: string;
 }) {

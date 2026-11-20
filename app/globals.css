@@ -2,12 +2,15 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* ---------------------------------------------------------------------------
-   Design tokens — copied from Orin (github.com/NateTKim/Orin, app/globals.css)
-   so this site reads as Orin's sibling. Raw scales live in @theme; semantic
-   shadcn tokens in :root map onto them. Light only, like Orin.
---------------------------------------------------------------------------- */
+/* `dark:` only applies under an explicit .dark class, which nothing sets. The site is dark
+   through its own tokens, and Orin's light demo must not pick up dark: styles from the OS. */
+@custom-variant dark (&:is(.dark *));
 
+/* ---------------------------------------------------------------------------
+   Orin's raw scales, copied from Orin (github.com/NateTKim/Orin, app/globals.css).
+   Only components/orin/* use them, inside an .orin-theme wrapper (bottom of this
+   file). The site itself never uses them.
+--------------------------------------------------------------------------- */
 @theme {
   --color-brand-50: oklch(0.972 0.012 266);
   --color-brand-100: oklch(0.945 0.028 266);
@@ -21,7 +24,7 @@
   --color-brand-900: oklch(0.36 0.11 267);
   --color-brand-950: oklch(0.27 0.075 267);
 
-  --color-sand-50: oklch(0.985 0.006 80); /* ≈ #fcfaf6 — page background */
+  --color-sand-50: oklch(0.985 0.006 80); /* ≈ #fcfaf6 — Orin's page background */
   --color-sand-100: oklch(0.965 0.008 80);
   --color-sand-200: oklch(0.925 0.01 80);
   --color-sand-300: oklch(0.87 0.012 78);
@@ -38,37 +41,55 @@
 
   --shadow-card: 0 1px 2px oklch(0.25 0.02 60 / 4%), 0 4px 16px -4px oklch(0.25 0.02 60 / 7%);
   --shadow-card-lg: 0 2px 4px oklch(0.25 0.02 60 / 4%), 0 16px 40px -12px oklch(0.25 0.02 60 / 14%);
-
-  --font-display: var(--font-serif), ui-serif, Georgia, serif;
 }
 
+/* Semantic tokens → utilities. Values resolve where the utility is used, so the
+   same class reads the site's tokens or, inside .orin-theme, Orin's. */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --font-heading: var(--font-sans);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-subtle-foreground: var(--subtle-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* The one accent. Data only: numbers, "after" bars, diagram highlights. */
+  --color-data: var(--data);
+
+  /* Window frames */
+  --color-frame: var(--frame-bg);
+  --color-frame-inner: var(--frame-inner);
+  --color-frame-bar: var(--frame-bar);
+  --color-frame-border: var(--frame-border);
+  --color-frame-divider: var(--frame-divider);
+
+  --font-sans: var(--font-site-sans);
+  --font-serif: var(--font-site-serif);
+  --font-heading: var(--font-site-sans);
+  --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  /* Orin's display face (font-display), for the Orin demo only. Inline, so it resolves
+     where it is used: --font-orin-serif is only defined inside .orin-theme (by the
+     /work/orin page's font class), so it is Fraunces there and has no effect anywhere else. */
+  --font-display: var(--font-orin-serif), ui-serif, Georgia, serif;
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -78,8 +99,359 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* ---------------------------------------------------------------------------
+   PALETTE. Recolor the whole site by editing these five values; every other
+   color below is mixed from them. After a swap, re-check contrast: muted text
+   and its derived "subtle" step must stay at or above 4.5:1 on the surfaces.
+--------------------------------------------------------------------------- */
 :root {
+  --palette-bg: #0e0d0c; /* page background */
+  --palette-text: #f1e9dd; /* body text */
+  --palette-muted: #b2a796; /* secondary text */
+  --palette-line: rgb(255 232 205 / 0.08); /* hairlines and borders */
+  --palette-accent: #ffb547; /* the one accent: data only */
+}
+
+/* Everything else, derived from the palette. */
+:root {
+  color-scheme: dark;
+
+  --background: var(--palette-bg);
+  --foreground: var(--palette-text);
+  --muted-foreground: var(--palette-muted);
+  --subtle-foreground: color-mix(in oklab, var(--palette-muted) 82%, var(--palette-bg));
+  --data: var(--palette-accent);
+
+  /* Surfaces step up from the page toward the text color. */
+  --frame-bg: color-mix(in oklab, var(--palette-text) 3%, var(--palette-bg));
+  --frame-bar: color-mix(in oklab, var(--palette-text) 4%, var(--palette-bg));
+  --frame-inner: color-mix(in oklab, var(--palette-text) 5%, var(--palette-bg));
+  --frame-border: var(--palette-line);
+  --frame-divider: color-mix(in oklab, var(--palette-line) 75%, transparent);
+  --frame-highlight: color-mix(in oklab, var(--palette-text) 7%, transparent);
+  --frame-highlight-strong: color-mix(in oklab, var(--palette-text) 15%, transparent);
+  --frame-edge-bottom: color-mix(in oklab, var(--palette-text) 13%, transparent);
+  --frame-shade: rgb(0 0 0 / 0.25);
+  --frame-glow: color-mix(in oklab, var(--palette-accent) 5%, transparent);
+  --bar-before: color-mix(in oklab, var(--palette-text) 42%, transparent); /* "before" bars */
+  --glow: 0 0 30px color-mix(in oklab, var(--palette-text) 14%, transparent);
+  --vignette-light: color-mix(in oklab, var(--palette-accent) 5.5%, transparent);
+  --vignette-edge: rgb(0 0 0 / 0.6);
+
+  /* shadcn's names, mapped onto the palette ("accent" here is a neutral hover
+     surface, not the data color). */
+  --card: var(--frame-bg);
+  --card-foreground: var(--foreground);
+  --popover: var(--frame-bg);
+  --popover-foreground: var(--foreground);
+  --primary: var(--palette-text);
+  --primary-foreground: var(--palette-bg);
+  --secondary: color-mix(in oklab, var(--palette-text) 6%, transparent);
+  --secondary-foreground: var(--foreground);
+  --muted: color-mix(in oklab, var(--palette-text) 6%, transparent);
+  --accent: color-mix(in oklab, var(--palette-text) 8%, transparent);
+  --accent-foreground: var(--foreground);
+  --destructive: #f87171;
+  --border: var(--palette-line);
+  --input: color-mix(in oklab, var(--palette-text) 14%, transparent);
+  --ring: color-mix(in oklab, var(--palette-text) 90%, transparent);
+  --chart-1: var(--data);
+  --chart-2: color-mix(in oklab, var(--palette-text) 42%, transparent);
+  --chart-3: color-mix(in oklab, var(--palette-text) 30%, transparent);
+  --chart-4: color-mix(in oklab, var(--palette-text) 20%, transparent);
+  --chart-5: color-mix(in oklab, var(--palette-text) 12%, transparent);
+}
+
+/* Type, shape and chrome (not colors). */
+:root {
+  --font-site-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  --font-site-serif: var(--font-newsreader), ui-serif, Georgia, serif;
+
+  --header-h: 3.5rem;
+  /* Side margin of the hero's resting frame; the stats strip and cards line up with it. */
+  --frame-inset: 1rem;
+  --radius: 0.75rem;
+  --frame-radius: 20px;
+  --frame-radius-sm: 14px;
+  --control-radius: 999px;
+  --tag-radius: 999px;
+
+  /* Muted traffic-light window dots: chrome, not palette. */
+  --dot-1: oklch(0.5 0.075 28);
+  --dot-2: oklch(0.6 0.07 80);
+  --dot-3: oklch(0.52 0.06 148);
+
+  --display-weight: 400;
+  --tracking-display: -0.03em;
+  /* The one italic phrase: as large as fits on one line at each width. */
+  --serif-scale: 1.06;
+  --serif-tracking: -0.03em;
+}
+@media (min-width: 40rem) {
+  :root {
+    --header-h: 4rem;
+    --frame-inset: clamp(1.5rem, 6vw, 7rem);
+    --serif-scale: 1.1;
+  }
+}
+@media (min-width: 48rem) {
+  :root {
+    --serif-scale: 1.2;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    scroll-padding-top: calc(var(--header-h) + 1rem);
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
+
+/* The page: near-black with a soft radial vignette (lifted at the top, darker
+   at the edges) that stays put while scrolling. */
+body {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(90% 60% at 50% 0%, var(--vignette-light), transparent 70%),
+    radial-gradient(140% 110% at 50% 45%, transparent 55%, var(--vignette-edge) 100%);
+}
+
+/* Text with a faint glow. */
+@utility text-glow {
+  text-shadow: var(--glow);
+}
+@utility tracking-display {
+  letter-spacing: var(--tracking-display);
+}
+/* Headline weight and tracking (hero, section and card titles, big numbers). */
+@utility display-type {
+  font-weight: var(--display-weight);
+  letter-spacing: var(--tracking-display);
+}
+/* Small labels: eyebrows, window titles, Before/After, axis ticks, tags. */
+@utility label-text {
+  font-family: var(--font-site-sans);
+  font-size: 0.78125rem;
+  line-height: 1.4;
+}
+/* The one italic serif phrase in a headline. */
+@utility serif-italic {
+  font-family: var(--font-site-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: calc(var(--serif-scale) * 1em);
+  letter-spacing: var(--serif-tracking);
+}
+
+/* ---------------------------------------------------------------------------
+   Hero zoom (components/site/hero.tsx + hero-zoom.tsx).
+
+   The window is drawn by two full-size layers clipped to a rounded inset
+   rectangle: .hero-ring (the 1px border, brighter at the top) and .hero-body
+   (the window, 1px inside it). --q is 1 at rest (inset, rounded) and 0 at
+   full bleed (edge to edge, square). The bottom edge keeps its 1px line at
+   full bleed, so when the frame scrolls away it ends in a deliberate edge,
+   not a seam. Only clip-path and translate change; nothing is scaled, and the
+   headline is a separate, unclipped layer, so the text is never resampled.
+
+   Default (JS off, reduced motion, short screens): no tall track; the frame
+   sits inset and wraps its content.
+   With html.motion-ok (set before first paint in app/layout.tsx), the track
+   gets 0.75 of a screen of extra height, the stage sticks, and HeroZoom writes
+   --p (0 → 1) from the scroll position: full bleed after about 0.6 of a screen,
+   a short hold, then release. Scroll speed and direction are untouched.
+--------------------------------------------------------------------------- */
+.hero-track {
+  position: relative;
+}
+.hero-stage {
+  --hh: var(--header-h);
+  --tb: 2.25rem; /* title bar height */
+  --x0: var(--frame-inset); /* side inset at rest */
+  --t0: calc(var(--hh) + 0.5rem); /* top inset at rest: clears the fixed header */
+  --b0: 0.75rem; /* bottom inset at rest */
+  --b0e: var(--b0); /* the same, measured from the stage's bottom edge */
+  --r0: calc(var(--frame-radius) + 6px); /* corner radius at rest */
+  --q: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: clip;
+}
+@media (min-width: 40rem) {
+  .hero-stage {
+    --t0: calc(var(--hh) + 1rem);
+    --b0: clamp(1.25rem, 4vh, 2.5rem);
+  }
+}
+.hero-ring,
+.hero-body {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.hero-ring {
+  background: linear-gradient(
+    to bottom,
+    var(--frame-highlight-strong),
+    var(--frame-border) 30%,
+    var(--frame-border) 85%,
+    var(--frame-edge-bottom)
+  );
+  clip-path: inset(
+    calc(var(--t0) * var(--q)) calc(var(--x0) * var(--q)) calc(var(--b0e) * var(--q))
+      calc(var(--x0) * var(--q)) round calc(var(--r0) * var(--q))
+  );
+}
+.hero-body {
+  /* A glow at the top and a soft shade toward the bottom edge, so the window
+     settles into the page instead of ending in a hard band. */
+  background:
+    radial-gradient(70% 55% at 50% 0%, var(--frame-glow), transparent 75%),
+    linear-gradient(to bottom, transparent 55%, var(--frame-shade)), var(--frame-bg);
+  clip-path: inset(
+    calc((var(--t0) + 1px) * var(--q)) calc((var(--x0) + 1px) * var(--q)) calc(var(--b0e) * var(--q) + 1px)
+      calc((var(--x0) + 1px) * var(--q)) round calc((var(--r0) - 1px) * var(--q))
+  );
+}
+/* The title bar follows the top edge until it meets the header, then stays
+   just below it. The dots also follow the left edge. */
+.hero-bar {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: var(--tb);
+  translate: 0 max(var(--hh), var(--t0) * var(--q));
+  background: var(--frame-bar);
+  border-bottom: 1px solid var(--frame-divider);
+}
+.hero-dots {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  height: var(--tb);
+  padding-inline: 0.875rem;
+  translate: calc(var(--x0) * var(--q)) max(var(--hh), var(--t0) * var(--q));
+}
+.hero-content {
+  position: relative;
+  padding: calc(var(--t0) + var(--tb) + 2.5rem) calc(var(--x0) + 1.25rem) calc(var(--b0e) + 2.5rem);
+}
+@media (min-width: 40rem) {
+  .hero-content {
+    padding-inline: calc(var(--x0) + 3rem);
+  }
+}
+@supports (height: 1lvh) {
+  @media (prefers-reduced-motion: no-preference) and (min-height: 30rem) {
+    html.motion-ok .hero-track {
+      height: calc(100lvh + 75svh);
+    }
+    html.motion-ok .hero-stage {
+      position: sticky;
+      top: 0;
+      height: 100lvh;
+      min-height: 0;
+      /* On phones the large viewport runs under the browser's toolbar: keep the
+         resting frame's bottom edge inside the small (always visible) viewport. */
+      --b0e: calc(var(--b0) + 100lvh - 100svh);
+      --q: calc(1 - var(--p, 0));
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Expandable rows (<details>): native, so they work with JS off. The open
+   animation is CSS-only and short (220ms), and skipped for reduced motion.
+--------------------------------------------------------------------------- */
+details.expand > summary {
+  list-style: none;
+  cursor: pointer;
+}
+details.expand > summary::-webkit-details-marker {
+  display: none;
+}
+details.expand .expand-icon {
+  transition: transform 200ms ease;
+}
+details.expand[open] .expand-icon {
+  transform: rotate(45deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Opening a <details> row: height eases open where supported. */
+  :root {
+    interpolate-size: allow-keywords;
+  }
+  details.expand::details-content {
+    block-size: 0;
+    overflow-y: clip;
+    transition:
+      block-size 220ms ease,
+      content-visibility 220ms allow-discrete;
+  }
+  details.expand[open]::details-content {
+    block-size: auto;
+  }
+
+  /* Scroll reveals (components/site/reveal.tsx). The server renders
+     data-reveal="idle", which is never hidden, so with JS off or before hydration
+     everything is simply visible. Only an element that was below the fold at
+     mount is "hidden", and it fades up when it turns "in". 260ms, opacity + 8px. */
+  [data-reveal="hidden"] {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  [data-reveal="in"] {
+    transition:
+      opacity 260ms ease-out,
+      transform 260ms ease-out;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Orin's semantic tokens, scoped. Only inside .orin-theme (the body of the Orin
+   demo's window frame on /work/orin) do the shared utilities (bg-background,
+   text-primary, font-display…) resolve to Orin's light sand-and-blue look.
+   Orin's fonts are attached to the same element as --font-orin-sans /
+   --font-orin-serif by next/font, on that route only (app/work/orin/page.tsx).
+--------------------------------------------------------------------------- */
+.orin-theme {
   color-scheme: light;
+  --font-site-sans: var(--font-orin-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-site-serif: var(--font-orin-serif), ui-serif, Georgia, serif;
   --background: var(--color-sand-50);
   --foreground: var(--color-sand-900);
   --card: oklch(0.998 0.002 85);
@@ -104,149 +476,9 @@
   --chart-4: var(--color-brand-300);
   --chart-5: var(--color-sand-400);
   --radius: 0.75rem;
+  color: var(--foreground);
+  font-family: var(--font-site-sans);
 }
-
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  html {
-    @apply font-sans;
-    scroll-padding-top: 5rem;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    html {
-      scroll-behavior: smooth;
-    }
-  }
-  :focus-visible {
-    outline: 2px solid var(--color-brand-600);
-    outline-offset: 2px;
-  }
-}
-
-/* ---------------------------------------------------------------------------
-   Hero backdrop: a sunrise wash using Orin's .orin-sunrise color stops
-   (rose 355, peach 30/50, cornflower 266), ordered pink → peach → pale
-   lavender-blue. Two oversized layers drift very slowly (transform only, so
-   it stays on the compositor). Static when reduced motion is requested.
---------------------------------------------------------------------------- */
-.sunrise {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    oklch(0.93 0.045 355 / 85%) 0%,
-    oklch(0.94 0.05 30 / 75%) 34%,
-    oklch(0.95 0.045 50 / 55%) 58%,
-    oklch(0.93 0.04 266 / 45%) 82%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
-}
-.sunrise::before,
-.sunrise::after {
-  content: "";
-  position: absolute;
-  inset: -40%;
-}
-.sunrise::before {
-  background:
-    radial-gradient(38% 30% at 22% 30%, oklch(0.9 0.06 355 / 70%), transparent 70%),
-    radial-gradient(36% 28% at 78% 26%, oklch(0.92 0.07 45 / 70%), transparent 70%);
-}
-.sunrise::after {
-  background:
-    radial-gradient(40% 30% at 62% 62%, oklch(0.9 0.05 266 / 55%), transparent 70%),
-    radial-gradient(30% 24% at 30% 70%, oklch(0.93 0.06 30 / 50%), transparent 70%);
-}
-
-/* ---------------------------------------------------------------------------
-   Expandable rows (<details>): native, so they work with JS off. The open
-   animation is CSS-only and short (220ms), and skipped for reduced motion.
---------------------------------------------------------------------------- */
-details.expand > summary {
-  list-style: none;
-  cursor: pointer;
-}
-details.expand > summary::-webkit-details-marker {
-  display: none;
-}
-details.expand .expand-icon {
-  transition: transform 200ms ease;
-}
-details.expand[open] .expand-icon {
-  transform: rotate(45deg);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  /* Stripe-style slow drift for the hero wash. */
-  @keyframes sunrise-drift-a {
-    from {
-      transform: translate3d(-4%, -2%, 0) rotate(0deg);
-    }
-    to {
-      transform: translate3d(4%, 3%, 0) rotate(8deg);
-    }
-  }
-  @keyframes sunrise-drift-b {
-    from {
-      transform: translate3d(3%, 2%, 0) rotate(0deg);
-    }
-    to {
-      transform: translate3d(-4%, -3%, 0) rotate(-6deg);
-    }
-  }
-  .sunrise::before {
-    animation: sunrise-drift-a 26s ease-in-out infinite alternate;
-    will-change: transform;
-  }
-  .sunrise::after {
-    animation: sunrise-drift-b 32s ease-in-out infinite alternate;
-    will-change: transform;
-  }
-
-  /* Demo frame's starting pose before Motion hydrates (see demo-frame.tsx).
-     Motion's inline transform takes over from here. */
-  html.motion-ok .demo-frame {
-    transform: scale(0.7) rotateX(16deg);
-  }
-  @media (max-width: 767px) {
-    html.motion-ok .demo-frame {
-      transform: scale(0.88) rotateX(8deg);
-    }
-  }
-
-  /* Opening a <details> row: height eases open where supported. */
-  :root {
-    interpolate-size: allow-keywords;
-  }
-  details.expand::details-content {
-    block-size: 0;
-    overflow-y: clip;
-    transition:
-      block-size 220ms ease,
-      content-visibility 220ms allow-discrete;
-  }
-  details.expand[open]::details-content {
-    block-size: auto;
-  }
-
-  /* Light scroll reveals (Wealthfront-style). Elements are only hidden once
-     the RevealObserver has started (html.reveal-on), so with JS off or
-     before hydration everything is simply visible. 260ms, opacity + 8px. */
-  html.reveal-on [data-reveal]:not([data-in]) {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  html.reveal-on [data-reveal] {
-    transition:
-      opacity 260ms ease-out,
-      transform 260ms ease-out;
-  }
+.orin-theme :focus-visible {
+  outline-color: var(--color-brand-600);
 }

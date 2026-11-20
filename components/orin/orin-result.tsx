@@ -141,7 +141,7 @@ export function OrinResult({ data }: { data: FilingApiSuccess }) {
                     </tbody>
                   </table>
                   {hasDerivedPoint && (
-                    <p className="text-[11px] leading-4 text-muted-foreground/80">
+                    <p className="text-[11px] leading-4 text-muted-foreground">
                       Companies don&apos;t file a separate fourth-quarter report, so those points are
                       calculated from the annual total minus the three reported quarters.
                     </p>

@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
-import { person } from "@/content/site";
+import { profile } from "@/content/profile";
 
 export async function copyEmail(): Promise<boolean> {
   try {
-    await navigator.clipboard.writeText(person.email);
+    await navigator.clipboard.writeText(profile.email);
     return true;
   } catch {
     return false;
@@ -26,10 +26,10 @@ export function CopyEmail() {
       <button
         type="button"
         onClick={onClick}
-        className="js-only inline-flex h-11 items-center gap-2 rounded-full border border-border bg-card px-5 text-[15px] font-medium text-foreground transition-colors hover:bg-sand-100"
+        className="js-only inline-flex h-11 items-center gap-2 rounded-(--control-radius) border border-frame-border bg-white/[0.035] px-5 text-[15px] font-medium text-foreground transition-colors duration-150 hover:bg-white/[0.07]"
       >
         {state === "copied" ? (
-          <Check className="size-4 text-up" aria-hidden />
+          <Check className="size-4" aria-hidden />
         ) : (
           <Copy className="size-4" aria-hidden />
         )}
@@ -39,7 +39,7 @@ export function CopyEmail() {
         {state === "copied"
           ? "Email address copied"
           : state === "failed"
-            ? "Couldn't copy. The address is " + person.email
+            ? "Couldn't copy. The address is " + profile.email
             : ""}
       </span>
     </>

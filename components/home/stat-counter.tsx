@@ -6,7 +6,7 @@ import { animate } from "motion/react";
 /**
  * A number that counts up once, the first time it scrolls into view.
  * The server HTML already holds the final value (readable with JS off), and
- * screen readers only ever get the final value. 300ms, per the motion rules.
+ * screen readers only ever get the final value. 250ms, under the 300ms motion rule.
  */
 export function StatCounter({
   value,
@@ -34,7 +34,7 @@ export function StatCounter({
         if (!entry.isIntersecting) return;
         io.disconnect();
         controls = animate(0, value, {
-          duration: 0.3,
+          duration: 0.25,
           ease: [0.16, 1, 0.3, 1],
           onUpdate: (v) => {
             el.textContent = `${prefix}${Math.round(v)}${suffix}`;

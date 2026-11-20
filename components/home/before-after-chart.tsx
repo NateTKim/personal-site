@@ -1,111 +1,168 @@
-"use client";
+import type { Duration, TimeRow } from "@/content/work";
+import { cn } from "@/lib/utils";
 
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  LabelList,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import { beforeAfter } from "@/content/site";
+/** The shared scale of one chart: its end, and the minute marks on the axis. */
+type Scale = { maxSeconds: number; minutes: readonly number[] };
 
-type Row = {
-  task: string;
-  before: number;
-  after: number;
-  beforeLabel: string;
-  afterLabel: string;
-  resumeText: string;
-  detail: string;
-};
+const pctOf = (scale: Scale) => (seconds: number) => `${(seconds / scale.maxSeconds) * 100}%`;
 
-const data: Row[] = beforeAfter.map((b) => ({
-  task: b.task,
-  before: b.before.seconds,
-  after: b.after.seconds,
-  beforeLabel: b.before.label,
-  afterLabel: b.after.label,
-  resumeText: b.resumeText,
-  detail: b.detail,
-}));
-
-function ChartTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: Row }> }) {
-  if (!active || !payload?.length) return null;
-  const d = payload[0].payload;
+/**
+ * Before/after bars, hand-written SVG rendered on the server: no JavaScript,
+ * nothing to download, visible with JS off. The words are a real <dl> (task,
+ * then the before and after values as the resume states them), so screen
+ * readers and no-JS readers get the data as text; the bars and the axis are
+ * decoration (aria-hidden). Bars use percentage widths and fixed pixel
+ * heights, so the text never shrinks on small screens.
+ *
+ * Honesty rules: every bar in a chart shares one scale that starts at zero; a
+ * range is drawn as a range (solid to its low end, hatched to its high end), an
+ * upper bound is drawn at the bound, and a removed step is an empty track (no
+ * bar: the step no longer exists, it doesn't take "almost no time"). The accent
+ * color marks the "after" state only.
+ */
+export function BeforeAfterChart({
+  id,
+  rows,
+  maxSeconds = 300,
+  minutes = [0, 1, 2, 3, 4, 5],
+  className,
+}: {
+  /** Unique on the page; scopes the SVG pattern id. */
+  id: string;
+  rows: readonly TimeRow[];
+  /** End of the shared scale, in seconds (default: 5 minutes). */
+  maxSeconds?: number;
+  /** Minute marks on the axis; the first is 0 and the last is the end. */
+  minutes?: readonly number[];
+  className?: string;
+}) {
+  const scale: Scale = { maxSeconds, minutes };
+  const pct = pctOf(scale);
+  const hatchId = `${id}-range`;
   return (
-    <div className="max-w-72 rounded-lg border border-border bg-popover px-3 py-2 text-xs leading-5 shadow-card-lg">
-      <p className="font-medium text-foreground">{d.task}</p>
-      <p className="text-muted-foreground">{d.detail}</p>
-      <p className="mt-1 text-foreground tabular-nums">
-        {d.beforeLabel} → {d.afterLabel}
-      </p>
-      <p className="mt-1 text-muted-foreground">Resume: “{d.resumeText}”</p>
+    <div className={cn("flex flex-col", className)}>
+      <svg aria-hidden width="0" height="0" className="absolute">
+        <defs>
+          <pattern
+            id={hatchId}
+            width="5"
+            height="5"
+            patternUnits="userSpaceOnUse"
+            patternTransform="rotate(45)"
+          >
+            <rect width="2" height="5" className="fill-(--bar-before)" />
+          </pattern>
+        </defs>
+      </svg>
+
+      <dl className="flex flex-col gap-6">
+        {rows.map((row) => (
+          <div key={row.key} className="flex flex-col gap-3">
+            <dt className="text-sm leading-5 font-medium text-foreground">{row.task}</dt>
+            <Measure label="Before" value={row.before} hatchId={hatchId} scale={scale} />
+            <Measure label="After" value={row.after} hatchId={hatchId} scale={scale} after />
+          </div>
+        ))}
+      </dl>
+
+      <svg aria-hidden className="mt-3 block h-4 w-full overflow-visible label-text tabular-nums">
+        {minutes.map((m, i) => (
+          <text
+            key={m}
+            x={pct(m * 60)}
+            y="11"
+            textAnchor={i === 0 ? "start" : i === minutes.length - 1 ? "end" : "middle"}
+            className="fill-subtle-foreground"
+          >
+            {i === minutes.length - 1 ? `${m} min` : m}
+          </text>
+        ))}
+      </svg>
     </div>
   );
 }
 
-const minutes = (s: number) => (s === 0 ? "0" : `${s / 60} min`);
-
-export default function BeforeAfterChart() {
+function Measure({
+  label,
+  value,
+  hatchId,
+  scale,
+  after = false,
+}: {
+  label: string;
+  value: Duration;
+  hatchId: string;
+  scale: Scale;
+  after?: boolean;
+}) {
   return (
-    <div className="h-64 w-full" aria-hidden>
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart
-          accessibilityLayer={false}
-          data={data}
-          layout="vertical"
-          margin={{ top: 4, right: 72, bottom: 4, left: 4 }}
-          barGap={4}
-          barCategoryGap="28%"
+    <dd className="flex flex-col gap-1.5">
+      {/* Wraps the value under the label when both don't fit on one line. */}
+      <p className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
+        <span className="label-text text-subtle-foreground">
+          {label}
+          <span className="sr-only">:</span>
+        </span>
+        <span
+          className={cn(
+            "text-xs leading-4 tabular-nums",
+            after ? "font-medium text-data" : "text-foreground",
+          )}
         >
-          <CartesianGrid horizontal={false} stroke="var(--color-border)" strokeOpacity={0.7} />
-          <XAxis
-            type="number"
-            domain={[0, 600]}
-            ticks={[0, 120, 240, 360, 480, 600]}
-            tickFormatter={minutes}
-            tickLine={false}
-            axisLine={false}
-            tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
+          {value.label}
+        </span>
+      </p>
+      <Bar value={value} hatchId={hatchId} scale={scale} after={after} />
+    </dd>
+  );
+}
+
+function Bar({
+  value,
+  hatchId,
+  scale,
+  after,
+}: {
+  value: Duration;
+  hatchId: string;
+  scale: Scale;
+  after: boolean;
+}) {
+  const pct = pctOf(scale);
+  const fill = after ? "fill-data" : "fill-(--bar-before)";
+  return (
+    <svg aria-hidden className="block h-2 w-full overflow-visible">
+      {/* The track: the whole scale, from zero. */}
+      <rect width="100%" height="100%" rx="1.5" className="fill-white/[0.06]" />
+
+      {value.kind === "range" && (
+        <>
+          <rect
+            x={pct(value.minSeconds)}
+            width={pct(value.maxSeconds - value.minSeconds)}
+            height="100%"
+            rx="1.5"
+            fill={`url(#${hatchId})`}
           />
-          <YAxis
-            type="category"
-            dataKey="task"
-            width={112}
-            tickLine={false}
-            axisLine={false}
-            tick={{ fill: "var(--color-sand-800)", fontSize: 12 }}
-          />
-          <Tooltip content={<ChartTooltip />} cursor={{ fill: "var(--color-brand-50)" }} />
-          <Bar
-            dataKey="before"
-            name="Before"
-            fill="var(--color-sand-300)"
-            radius={[0, 6, 6, 0]}
-            isAnimationActive={false}
-          >
-            <LabelList dataKey="beforeLabel" position="right" fill="var(--color-sand-700)" fontSize={12} />
-          </Bar>
-          <Bar
-            dataKey="after"
-            name="After"
-            fill="var(--color-brand-600)"
-            radius={[0, 6, 6, 0]}
-            isAnimationActive={false}
-          >
-            <LabelList
-              dataKey="afterLabel"
-              position="right"
-              fill="var(--color-brand-700)"
-              fontSize={12}
-              fontWeight={600}
-            />
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
+          <rect width={pct(value.minSeconds)} height="100%" rx="1.5" className={fill} />
+        </>
+      )}
+      {(value.kind === "point" || value.kind === "upTo") && (
+        <rect width={pct(value.seconds)} height="100%" rx="1.5" className={fill} />
+      )}
+
+      {/* Minute marks: thin gaps in the color of the window behind. */}
+      {scale.minutes.slice(1, -1).map((m) => (
+        <line
+          key={m}
+          x1={pct(m * 60)}
+          x2={pct(m * 60)}
+          y1="0"
+          y2="100%"
+          strokeWidth="2"
+          className="stroke-frame-inner"
+        />
+      ))}
+    </svg>
   );
 }

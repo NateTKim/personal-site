@@ -12,19 +12,27 @@ npm run build && npm start
 
 ## Where things live
 
-| What | Where |
-| --- | --- |
-| Every fact on the site, with its source | `content/site.ts` |
-| Real Orin output for the demo | `content/orin-demo/*.json` |
-| Public resume (phone and ZIP removed) | `public/Nathanael_Kim_Resume.pdf` |
-| Orin case study | `app/orin/page.mdx` |
-| Code copied from Orin (keep identical) | `lib/orin/*`, `components/ui/*` |
+| What                                                            | Where                                                                                |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Every fact on the site, tagged with its source                  | `content/profile.ts`, `content/work.ts`, `content/stats.ts`, `content/work-pages.ts` |
+| Facts for `/info` (the resume page)                             | `content/info.ts`                                                                    |
+| Copy for the five `/work/<slug>` pages                          | `content/work-pages.ts` (template: `components/work/work-page.tsx`)                  |
+| The Orin demo's NATE easter egg (a joke built from the master)  | `content/nate-egg.ts`                                                                |
+| Colors: five palette tokens; everything else is mixed from them | the `PALETTE` block at the top of `app/globals.css`                                  |
+| Real Orin output for the demo (`/work/orin`)                    | `content/orin-demo/*.json`                                                           |
+| Orin screenshot on the home page                                | `public/orin/results.png`                                                            |
+| Public resume (phone and ZIP removed)                           | `public/Nathanael_Kim_Resume.pdf`                                                    |
+| Code copied from Orin (keep identical)                          | `lib/orin/*`, `components/ui/*`                                                      |
 
 ## Rules for content
 
-- Every number, date, tool and outcome must trace to the resume, the build brief, or Nate.
-  Tag new entries in `content/site.ts` the same way.
-- The NATE easter egg (`components/orin/nate-result.tsx`) uses resume facts only.
+- Every number, date, tool and outcome must trace to the master resume, to the public resume
+  where Nate asked for it, or to Nate. Tag new entries the same way as in `content/work.ts`.
+- A fact that is still waiting for Nate is shown with a visible TODO marker
+  (`components/site/todo.tsx`).
+- The NATE easter egg uses master facts only, from `content/nate-egg.ts`.
+- Orin's fonts (Inter, Fraunces) load on `/work/orin` only (`app/work/orin/page.tsx`) and are
+  scoped to the demo frame's `.orin-theme` body. Recharts loads there only, and lazily.
 - Never hand-write financial figures in the demo. Refresh them with the export script.
 
 ## Refreshing the Orin demo data
@@ -41,10 +49,11 @@ node --env-file=<path-to-Orin>/.env.local scripts/export-orin-demo.mjs AAPL NVDA
 
 ## Open items
 
-- Screenshots for `/orin`: add `public/orin/results.png` and `public/orin/health.png`. Until
-  then the page shows visible TODO boxes.
-- The Chewy pitch deck is intentionally not linked. To link it, add `href` and `linkLabel` to
-  its entry in `content/site.ts`.
+- The master resume is `content/master-resume.txt`, a text extraction of
+  `content/Nathanael Kim — Master Resume.pdf` (2026-11-19; the PDF wins where the text is
+  ambiguous). Both are gitignored. Source tags in `content/*.ts` point to it as
+  `[M] Section › Entry, bullet n`.
+- The Chewy pitch deck is intentionally not linked.
 - `content/Nathanael_Kim_Resume_Public.pdf` is gitignored: it still contains an unused PDF object
   with the old header (phone, ZIP). Only the rebuilt copy in `public/` ships.
 - Not deployed. No domain yet; `metadataBase` falls back to Vercel's production URL.

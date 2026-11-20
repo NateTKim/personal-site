@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, ChevronDown, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { WindowFrame } from "@/components/site/window-frame";
 import { cn } from "@/lib/utils";
 import { DEMO_TICKERS, TICKER_RE, type DemoSample, type DemoTicker } from "@/lib/orin/demo-data";
-import { DemoFrame } from "./demo-frame";
+import { nateEgg } from "@/content/nate-egg";
 import { OrinResult, formatDate } from "./orin-result";
 import { NateResult } from "./nate-result";
 
@@ -20,7 +21,24 @@ function isDemoTicker(t: string): t is DemoTicker {
   return (DEMO_TICKERS as readonly string[]).includes(t);
 }
 
-export function OrinDemo({ samples }: { samples: Record<DemoTicker, DemoSample> }) {
+/**
+ * Orin's results screen with real cached output, inside one of the site's
+ * window frames. The frame is static (no scroll zoom: the hero's zoom is the
+ * site's only large animation) and its chrome is the site's; only its body
+ * looks like Orin. That body is the .orin-theme scope, and `fontClassName`
+ * attaches Orin's fonts there (their CSS variables are set on it and nowhere
+ * else). The window title works as the address bar.
+ *
+ * With JS off, the server HTML holds the AAPL sample in full (the <noscript>
+ * style below removes the preview clip) and the revenue chart's data table.
+ */
+export function OrinDemo({
+  samples,
+  fontClassName,
+}: {
+  samples: Record<DemoTicker, DemoSample>;
+  fontClassName: string;
+}) {
   const [view, setView] = useState<View>({ kind: "sample", ticker: "AAPL" });
   const [input, setInput] = useState("");
   const [announce, setAnnounce] = useState("");
@@ -28,7 +46,7 @@ export function OrinDemo({ samples }: { samples: Record<DemoTicker, DemoSample> 
   const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.info("%cOrin demo: try the ticker NATE.", "color:#3b64dd;font-weight:600");
+    console.info("%cOrin demo: try the ticker NATE.", "font-weight:600");
   }, []);
 
   function show(raw: string) {
@@ -62,18 +80,19 @@ export function OrinDemo({ samples }: { samples: Record<DemoTicker, DemoSample> 
   const sample = view.kind === "sample" ? samples[view.ticker] : null;
 
   return (
-    <DemoFrame url={url}>
+    <WindowFrame size="sm" title={url} bodyClassName={cn("orin-theme", fontClassName)}>
       <div className="@container relative bg-background">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-gradient-to-b from-brand-50/60 to-transparent"
         />
         <div className="relative flex flex-col gap-4 p-4 pb-0 @lg:gap-5 @lg:px-8 @lg:pt-7">
-          {/* Orin's app header: wordmark + compact search form */}
+          {/* Orin's app header: wordmark + compact search form. Below 24rem the form
+              takes its own full-width row, so it never runs past the frame. */}
           <div className="flex flex-wrap items-center justify-between gap-4">
             <span className="font-display text-2xl font-semibold tracking-tight text-foreground">Orin</span>
             <form
-              className="flex gap-2"
+              className="flex w-full gap-2 @sm:w-auto"
               onSubmit={(e) => {
                 e.preventDefault();
                 show(input);
@@ -91,7 +110,7 @@ export function OrinDemo({ samples }: { samples: Record<DemoTicker, DemoSample> 
                 autoComplete="off"
                 autoCapitalize="characters"
                 spellCheck={false}
-                className="h-11 w-40 rounded-xl bg-card text-base shadow-card @lg:w-48"
+                className="h-11 min-w-0 flex-1 rounded-xl bg-card text-base shadow-card @sm:w-40 @sm:flex-none @lg:w-48"
               />
               <Button
                 type="submit"
@@ -169,7 +188,7 @@ export function OrinDemo({ samples }: { samples: Record<DemoTicker, DemoSample> 
 
             <p className="border-t border-border pt-5 text-xs leading-5 text-muted-foreground">
               {view.kind === "nate"
-                ? "All numbers come straight from Nate's resume. The jokes are hand-written. Not investment advice."
+                ? nateEgg.footer
                 : "All numbers come straight from the company's official SEC report. The explanations are AI-written using only those numbers. Not investment advice."}
             </p>
           </div>
@@ -195,7 +214,10 @@ export function OrinDemo({ samples }: { samples: Record<DemoTicker, DemoSample> 
               >
                 {expanded ? "Show less" : "Show the full analysis"}
                 <ChevronDown
-                  className={cn("size-4 transition-transform duration-200", expanded && "rotate-180")}
+                  className={cn(
+                    "size-4 transition-transform duration-200 motion-reduce:transition-none",
+                    expanded && "rotate-180",
+                  )}
                   aria-hidden
                 />
               </button>
@@ -206,7 +228,7 @@ export function OrinDemo({ samples }: { samples: Record<DemoTicker, DemoSample> 
           </noscript>
         </div>
       </div>
-    </DemoFrame>
+    </WindowFrame>
   );
 }
 

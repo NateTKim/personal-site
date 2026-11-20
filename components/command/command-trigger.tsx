@@ -10,6 +10,7 @@ const CommandMenu = dynamic(() => import("./command-menu").then((m) => m.Command
   ssr: false,
 });
 
+/** "Menu" on small screens (where it also holds LinkedIn, GitHub and Resume), ⌘K above. */
 export function CommandTrigger() {
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -50,14 +51,13 @@ export function CommandTrigger() {
         onFocus={() => setLoaded(true)}
         aria-haspopup="dialog"
         aria-keyshortcuts="Meta+K Control+K"
-        className="js-only inline-flex h-9 items-center gap-2 rounded-full border border-border bg-card px-3 text-sm text-sand-700 shadow-card transition-colors hover:bg-sand-100 hover:text-foreground"
+        // One name on every screen size; it contains both visible labels ("Menu", the shortcut).
+        aria-label={`Open menu (${shortcut})`}
+        className="js-only inline-flex h-8 items-center gap-1.5 rounded-(--control-radius) border border-frame-border bg-white/[0.035] px-2.5 text-[13px] text-muted-foreground transition-colors duration-150 hover:bg-white/[0.07] hover:text-foreground md:px-3"
       >
-        <Search className="size-3.5" aria-hidden />
-        <span className="sm:hidden">Menu</span>
-        <span className="hidden sm:inline">Jump to</span>
-        <kbd className="hidden rounded-md bg-sand-100 px-1.5 py-0.5 font-sans text-[11px] font-medium text-sand-700 ring-1 ring-sand-200 sm:inline">
-          {shortcut}
-        </kbd>
+        <span className="md:hidden">Menu</span>
+        <Search className="hidden size-3.5 md:block" aria-hidden />
+        <kbd className="hidden label-text md:inline">{shortcut}</kbd>
       </button>
       {loaded && <CommandMenu open={open} onOpenChange={setOpen} />}
     </>
