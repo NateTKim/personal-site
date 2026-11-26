@@ -4,6 +4,7 @@
 // Bullets are the master's main numbered bullets, word for word (never the "alt" lines),
 // with a closing period added. Do not add a number, date, tool or outcome here without a
 // source tag.
+// "–\u2060Madison": the word joiner (U+2060) keeps "UW–Madison" on one line at the dash.
 
 import type { StaticImageData } from "next/image";
 import nateImage1 from "@/public/info/nate_image_1.jpg";
@@ -69,7 +70,7 @@ export const photos: readonly InfoPhoto[] = [
 // typographic. One paragraph, one sentence per line.
 export const about = {
   text: [
-    "I’m a junior at UW–Madison studying finance and computer science, and I’m most interested in where business and technology meet.",
+    "I’m a junior at UW–\u2060Madison studying finance and computer science, and I’m most interested in where business and technology meet.",
     "I’m president of CodeForGood, a project-based club where student teams build software for nonprofits.",
     "In summer 2026 I was a software engineering intern at Alphaeon Credit, a healthcare fintech company.",
     "Outside of school and work, I’m usually playing basketball.",
@@ -246,7 +247,7 @@ export const leadership: readonly InfoEntry[] = [
 
 // [M] Education
 export const education = {
-  school: "University of Wisconsin–Madison",
+  school: "University of Wisconsin–\u2060Madison",
   location: "Madison, WI",
   dates: "Expected May 2028",
   lines: [
@@ -287,7 +288,7 @@ export const writing = [
     // [M] Publications: "Unfolding the Future: How AlphaFold 3 Redefines Protein Structure
     // Prediction." Journal of Undergraduate Science & Technology, UW–Madison, 2025.
     title: "Unfolding the Future: How AlphaFold 3 Redefines Protein Structure Prediction",
-    venue: "Journal of Undergraduate Science & Technology, UW–Madison",
+    venue: "Journal of Undergraduate Science & Technology, UW–\u2060Madison",
     coAuthor: "Co-written with Allen Zhao", // [N] the journal's byline: "Allen Zhao & Nate Kim"
     issue: "Vol. X, Issue II, Spring/Summer 2025", // [N] from the issue; [M] the year
     href: "https://drive.google.com/file/d/1tpSQ3IFCPbYTfhTaUXy3XrCgjfJS5vFI/view", // [N] the full issue

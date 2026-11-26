@@ -4,6 +4,7 @@
 //   [D] = the demo itself (lib/orin/demo-data.ts: the samples are real Orin output)
 // The jokes and labels are hand-written and carry no facts. Every number, date and tool
 // below has a source tag. Platform figures are always labeled as the platform's.
+// "–\u2060Madison": the word joiner (U+2060) keeps "UW–Madison" on one line at the dash.
 
 export const nateEgg = {
   notice: {
@@ -24,10 +25,10 @@ export const nateEgg = {
     score: "3.7",
     outOf: "/4.0",
     label: "Dean’s List",
-    timeframe: "Based on this resume. GPA from the University of Wisconsin–Madison.",
+    timeframe: "Based on this resume. GPA from the University of Wisconsin–\u2060Madison.",
     // [M] Education: "University of Wisconsin–Madison ... Expected May 2028 · Bachelor of Business
     // Administration: Finance, Investment & Banking · Additional Major: Computer Science"
-    why: "Nate is earning a Bachelor of Business Administration in Finance, Investment & Banking, with an additional major in Computer Science, at the University of Wisconsin–Madison. Expected May 2028.",
+    why: "Nate is earning a Bachelor of Business Administration in Finance, Investment & Banking, with an additional major in Computer Science, at the University of Wisconsin–\u2060Madison. Expected May 2028.",
     factors: [
       // [M] Experience › Alphaeon Credit, bullet 4: "Grew the Playwright end-to-end suite 67%"
       { key: "e2e", direction: "up", sentiment: "positive", label: "Playwright E2E suite", detail: "+67%" },
