@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { ResolvingMetadata } from "next";
 import { ArrowUpRight } from "lucide-react";
 import {
   about,
@@ -18,12 +18,16 @@ import { EntryHeader, EntryList, PhotoSlots, infoBody } from "@/components/info/
 import { LabelSection } from "@/components/site/label-section";
 import { SiteHeader } from "@/components/site/site-header";
 import { MetaSep } from "@/components/work/work-card";
+import { pageMetadata } from "@/lib/page-metadata";
 
-export const metadata: Metadata = {
-  title: "Info",
-  description: infoDescription,
-  openGraph: { title: `Info · ${profile.name}`, description: infoDescription, type: "profile" },
-};
+export function generateMetadata(_: PageProps<"/info">, parent: ResolvingMetadata) {
+  return pageMetadata(parent, {
+    path: "/info",
+    title: "Info",
+    description: infoDescription,
+    openGraph: { title: `Info · ${profile.name}`, type: "profile" },
+  });
+}
 
 /**
  * /info: who Nate is, then the resume in the label-column layout the /work pages
@@ -42,7 +46,7 @@ export default function InfoPage() {
           <header className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,21rem)] lg:items-end lg:gap-16">
             <h1 className="text-[clamp(2.25rem,1.2rem+3.6vw,4.5rem)] leading-[1.04] display-type text-balance text-foreground text-glow">
               {headline.lead}
-              <span className="serif-italic">{headline.italic}</span>
+              {headline.italic && <span className="serif-italic">{headline.italic}</span>}
             </h1>
             <PhotoSlots photos={photos} />
           </header>

@@ -6,14 +6,14 @@ import { Todo } from "@/components/site/todo";
 import { WindowFrame } from "@/components/site/window-frame";
 
 /**
- * Separator for "role · dates · summary": a dot for the eye, a comma for screen
- * readers. A no-break space keeps the dot on the line of the item before it.
- * Also used by the meta line on the /work pages.
+ * Separator for "role · dates · summary": a dot for the eye, hidden from screen
+ * readers (the parts are read in order, without it). No extra text, so copied
+ * text reads "role · dates · summary". A no-break space keeps the dot on the
+ * line of the item before it. Also used by the /work pages' and /info's meta lines.
  */
 export function MetaSep() {
   return (
     <>
-      <span className="sr-only">,</span>
       <span aria-hidden className="text-subtle-foreground">
         &nbsp;·
       </span>{" "}

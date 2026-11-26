@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Hanken_Grotesk, Newsreader } from "next/font/google";
-import { IntroCard } from "@/components/site/intro-card";
 import { SiteFooter } from "@/components/site/site-footer";
-import { hero, profile } from "@/content/profile";
+import { profile } from "@/content/profile";
+import { siteDescription, siteUrl } from "@/lib/page-metadata";
 import { cn } from "@/lib/utils";
 import "./globals.css";
 
@@ -20,19 +20,20 @@ const serif = Newsreader({
   variable: "--font-newsreader",
 });
 
-const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : "http://localhost:3000";
-
+// Defaults for every route. Each page sets its own description, canonical link and Open Graph
+// (with og:url) through pageMetadata (lib/page-metadata.ts); the 404 page keeps these and has
+// no canonical. The link-preview image is app/opengraph-image.tsx.
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: { default: `${profile.name} (${profile.legalName})`, template: `%s · ${profile.name}` },
-  description: hero.sub,
+  description: siteDescription,
   openGraph: {
     title: profile.name,
-    description: hero.sub,
+    description: siteDescription,
     type: "website",
   },
+  // Next copies the title, description and image from Open Graph.
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {
@@ -41,34 +42,14 @@ export const viewport: Viewport = {
 };
 
 // Runs before first paint (full loads only; client-side navigations never run it).
-// Unless reduced motion is on, it:
-// - marks scroll-linked motion as allowed (html.motion-ok), so the hero's tall zoom
-//   track is laid out before anything renders (no jump on hydration);
-// - on the first full load of a browser session (a sessionStorage flag), shows the
-//   intro card (html.intro), starts its 250ms fade 650ms after the first paint
-//   (html.intro-out) and removes both classes at 900ms. The first paint's time comes
-//   from the paint timing entry, polled for a few frames; without one, the first
-//   frame's time is used, which is never later. So the card is on screen for about
-//   900ms at most.
-// With JS off or reduced motion no class is added: the hero is static and the intro
-// card never shows. If storage is blocked, the card is skipped too.
+// Unless reduced motion is on, it marks scroll-linked motion as allowed (html.motion-ok),
+// so the hero's tall zoom track is laid out before anything renders (no jump on
+// hydration). With JS off or reduced motion the class is never added and the hero is static.
 const prePaint = [
   "!function(){try{",
-  "var c=document.documentElement.classList;",
   "if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;",
-  "c.add('motion-ok');",
-  "if(sessionStorage.getItem('nk-intro'))return;",
-  "sessionStorage.setItem('nk-intro','1');",
-  "c.add('intro');",
-  "var t0,n=0;",
-  "requestAnimationFrame(function f(t){",
-  "var p=performance.getEntriesByType('paint')[0];",
-  "if(t0===undefined)t0=t;",
-  "if(!p&&++n<10)return requestAnimationFrame(f);",
-  "var w=performance.now()-(p?p.startTime:t0);",
-  "setTimeout(function(){c.add('intro-out')},650-w);",
-  "setTimeout(function(){c.remove('intro','intro-out')},900-w)",
-  "})}catch(e){}}()",
+  "document.documentElement.classList.add('motion-ok')",
+  "}catch(e){}}()",
 ].join("");
 
 // With JS off: hide controls that only work with JS, show the no-JS menu on
@@ -85,8 +66,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </noscript>
       </head>
       <body>
-        {/* First in <body>, so the first frame that paints any content already has it. */}
-        <IntroCard />
         <a
           href="#main"
           className="sr-only rounded-(--control-radius) border border-frame-border bg-frame px-4 py-2 text-sm font-medium text-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"

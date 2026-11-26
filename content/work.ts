@@ -11,7 +11,7 @@ export type Duration =
   | { kind: "range"; minSeconds: number; maxSeconds: number; label: string }
   /** An upper bound, e.g. "under 15 seconds". Drawn at the bound. */
   | { kind: "upTo"; seconds: number; label: string }
-  /** The step no longer exists: drawn as an empty track, never as a short bar. */
+  /** The step no longer exists: a marker at zero with the label, never a bar or a track. */
   | { kind: "removed"; label: string };
 
 export type TimeRow = {
@@ -184,7 +184,7 @@ export const businessSoftware = {
   // set smaller on the title line.
   title: "Business-Software",
   titleSuffix: "by Gate58 Marketing",
-  role: "Full Stack Developer Intern", // [M] Experience › Business-Software
+  role: "Full-Stack Developer Intern", // [M] Experience › Business-Software; hyphen: [N] 2026-11-26
   dates: "May – Sep 2025", // [M] Experience › Business-Software: "May 2025 – Sep 2025"
   // [M] Business-Software, bullets 1 ("Built and deployed an admin dashboard for managing vendors
   // and domain objects") and 2 ("an MVC platform with 1M+ downloads"). Wording by the lead.

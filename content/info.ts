@@ -34,8 +34,10 @@ export type InfoEntry = {
   notice?: string;
 };
 
-// [M] Header: "Nathanael (Nate) Kim"
-export const headline = { lead: "Nathanael Kim. ", italic: "Nate, for short." } as const;
+// [M] Header: "Nathanael (Nate) Kim". [N] Just the name, with no italic phrase (Nate's choice,
+// 2026-11-26: the exception to one italic phrase per headline). `italic`, when set, follows
+// `lead`, so `lead` then ends with a space.
+export const headline: { lead: string; italic?: string } = { lead: "Nathanael Kim." };
 
 // [M] Header: "Nathanael (Nate) Kim"; the sections are the page's own.
 export const infoDescription =
@@ -114,7 +116,7 @@ export const experience: readonly InfoEntry[] = [
     // Chicago, IL · May 2025 – Sep 2025"
     key: "business-software",
     org: "Business-Software by Gate58 Marketing",
-    role: "Full Stack Developer Intern",
+    role: "Full-Stack Developer Intern", // hyphen: [N] 2026-11-26 (the master and PDF have "Full Stack")
     location: "Chicago, IL",
     dates: "May 2025 – Sep 2025",
     href: "/work/business-software",

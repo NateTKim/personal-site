@@ -205,10 +205,10 @@ export const workPages: Record<WorkSlug, WorkPage> = {
   // -------------------------------------------------------------------------
   "business-software": {
     section: "Experience", // [M] Experience
-    italic: "Full Stack Developer Intern", // [M] Experience › Business-Software by Gate58 Marketing
+    italic: "Full-Stack Developer Intern", // [M] Experience › Business-Software; hyphen: [N] 2026-11-26
     // [M] Experience › Business-Software by Gate58 Marketing: "Full Stack Developer Intern ·
     // Chicago, IL · May 2025 – Sep 2025"
-    meta: { role: "Full Stack Developer Intern", location: "Chicago, IL", dates: "May 2025 – Sep 2025" },
+    meta: { role: "Full-Stack Developer Intern", location: "Chicago, IL", dates: "May 2025 – Sep 2025" },
     context: [
       // [M] Business-Software, bullet 2: "for an MVC platform with 1M+ downloads connecting 1,000+
       // vendors and buyers". The platform's figures, never Nate's [N]; the second sentence says so.

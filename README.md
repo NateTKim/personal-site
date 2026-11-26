@@ -12,19 +12,20 @@ npm run build && npm start
 
 ## Where things live
 
-| What                                                               | Where                                                                                |
-| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
-| Every fact on the site, tagged with its source                     | `content/profile.ts`, `content/work.ts`, `content/stats.ts`, `content/work-pages.ts` |
-| Facts for `/info` (the resume page)                                | `content/info.ts`                                                                    |
-| Copy for the five `/work/<slug>` pages                             | `content/work-pages.ts` (template: `components/work/work-page.tsx`)                  |
-| The Orin demo's NATE easter egg (a joke built from the master)     | `content/nate-egg.ts`                                                                |
-| Colors: five palette tokens; everything else is mixed from them    | the `PALETTE` block at the top of `app/globals.css`                                  |
-| Real Orin output for the demo (`/work/orin`)                       | `content/orin-demo/*.json`                                                           |
-| Orin screenshot on the home page                                   | `public/orin/results.png`                                                            |
-| Photos on `/info` (EXIF-stripped web copies; originals never ship) | `public/info/*.jpg`, listed in `content/info.ts`                                     |
-| Intro card (first full load per browser session)                   | `components/site/intro-card.tsx`, timed by the pre-paint script in `app/layout.tsx`  |
-| Public resume (phone and ZIP removed)                              | `public/Nathanael_Kim_Resume.pdf`                                                    |
-| Code copied from Orin (keep identical)                             | `lib/orin/*`, `components/ui/*`                                                      |
+| What                                                               | Where                                                                                        |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- |
+| Every fact on the site, tagged with its source                     | `content/profile.ts`, `content/work.ts`, `content/stats.ts`, `content/work-pages.ts`         |
+| Facts for `/info` (the resume page)                                | `content/info.ts`                                                                            |
+| Copy for the five `/work/<slug>` pages                             | `content/work-pages.ts` (template: `components/work/work-page.tsx`)                          |
+| The Orin demo's NATE easter egg (a joke built from the master)     | `content/nate-egg.ts`                                                                        |
+| Colors: five palette tokens; everything else is mixed from them    | the `PALETTE` block at the top of `app/globals.css`                                          |
+| Real Orin output for the demo (`/work/orin`)                       | `content/orin-demo/*.json`                                                                   |
+| Orin screenshot on the home page                                   | `public/orin/results.png`                                                                    |
+| Photos on `/info` (EXIF-stripped web copies; originals never ship) | `public/info/*.jpg`, listed in `content/info.ts`                                             |
+| Public resume (phone and ZIP removed)                              | `public/Nathanael_Kim_Resume.pdf`                                                            |
+| Link-preview image (og:image, also used for twitter:image)         | `app/opengraph-image.tsx`; its fonts are static TTFs in `fonts/` (OFL, licences beside them) |
+| Page metadata: canonical link, og:url, the image on every page     | `lib/page-metadata.ts`                                                                       |
+| Code copied from Orin (keep identical)                             | `lib/orin/*`, `components/ui/*`                                                              |
 
 ## Rules for content
 
@@ -58,4 +59,5 @@ node --env-file=<path-to-Orin>/.env.local scripts/export-orin-demo.mjs AAPL NVDA
 - The Chewy pitch deck is intentionally not linked.
 - `content/Nathanael_Kim_Resume_Public.pdf` is gitignored: it still contains an unused PDF object
   with the old header (phone, ZIP). Only the rebuilt copy in `public/` ships.
-- Not deployed. No domain yet; `metadataBase` falls back to Vercel's production URL.
+- Deployed on Vercel at https://natekim-three.vercel.app (no custom domain yet). Canonical links,
+  og:url and the preview image use `VERCEL_PROJECT_PRODUCTION_URL`, else `profile.siteHost`.

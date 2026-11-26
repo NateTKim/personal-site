@@ -442,44 +442,27 @@ details.expand[open] .expand-icon {
 }
 
 /* ---------------------------------------------------------------------------
-   Intro card (components/site/intro-card.tsx). Hidden unless html.intro is set,
-   which the pre-paint script in app/layout.tsx does on the first full load of a
-   browser session only: never with JS off or reduced motion, never on a
-   client-side navigation. Timed from the first paint: the text rises in (200ms),
-   holds until 650ms, then the card fades out in 250ms (html.intro-out), passing
-   all input through while it fades; at 900ms it is gone. Fixed and out of
-   flow, so nothing under it moves.
+   Stat counter (components/home/stat-counter.tsx). Its text is always the final
+   value. While it counts up, data-count holds the number on screen: the real
+   text turns transparent (still there for copying and screen readers) and
+   data-count is drawn over it with empty alt text (`/ ""`), so assistive tech
+   never reads it. Inline-block, so the overlay (inset: 0, same line-height)
+   shares the text's baseline. Where `content` has no alt text the script never
+   sets data-count, and the final value simply shows.
 --------------------------------------------------------------------------- */
-.intro-card {
-  display: none;
+.stat-count {
+  position: relative;
+  display: inline-block;
 }
-@media (prefers-reduced-motion: no-preference) {
-  html.intro .intro-card {
-    position: fixed;
+@supports (content: "" / "") {
+  .stat-count[data-count] {
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-count[data-count]::after {
+    content: attr(data-count) / "";
+    position: absolute;
     inset: 0;
-    z-index: 100;
-    display: grid;
-    place-items: center;
-    padding: 1.5rem;
-    text-align: center;
-    /* The page's own background and vignette, so the fade only reveals content. */
-    background:
-      radial-gradient(90% 60% at 50% 0%, var(--vignette-light), transparent 70%),
-      radial-gradient(140% 110% at 50% 45%, transparent 55%, var(--vignette-edge) 100%), var(--background);
-  }
-  html.intro .intro-card-text {
-    animation: intro-rise 200ms ease-out both;
-  }
-  html.intro-out .intro-card {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 250ms ease-out;
-  }
-}
-@keyframes intro-rise {
-  from {
-    opacity: 0;
-    translate: 0 6px;
+    -webkit-text-fill-color: currentColor;
   }
 }
 

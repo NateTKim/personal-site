@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { ResolvingMetadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ArrowUpRight, Info } from "lucide-react";
 import { profile } from "@/content/profile";
@@ -8,6 +8,7 @@ import { LabelSection } from "@/components/site/label-section";
 import { Reveal } from "@/components/site/reveal";
 import { SiteHeader } from "@/components/site/site-header";
 import { WindowFrame } from "@/components/site/window-frame";
+import { pageMetadata } from "@/lib/page-metadata";
 import { cn } from "@/lib/utils";
 import { MetaSep } from "./work-card";
 
@@ -20,16 +21,16 @@ function fullTitle(meta: WorkMeta) {
   return meta.titleSuffix ? `${meta.title} ${meta.titleSuffix}` : meta.title;
 }
 
-/** <title>, description and Open Graph for one /work page. */
-export function workMetadata(slug: WorkSlug): Metadata {
+/** <title>, description, canonical link and Open Graph for one /work page (its generateMetadata). */
+export function workMetadata(slug: WorkSlug, parent: ResolvingMetadata) {
   const { meta, page } = entry(slug);
   const title = fullTitle(meta);
-  const description = page.descriptionNote ? `${meta.summary} ${page.descriptionNote}` : meta.summary;
-  return {
+  return pageMetadata(parent, {
+    path: meta.href,
     title,
-    description,
-    openGraph: { title: `${title} · ${profile.name}`, description, type: "article" },
-  };
+    description: page.descriptionNote ? `${meta.summary} ${page.descriptionNote}` : meta.summary,
+    openGraph: { title: `${title} · ${profile.name}`, type: "article" },
+  });
 }
 
 const bodyText = "text-[17px] leading-relaxed text-muted-foreground";

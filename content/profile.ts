@@ -1,8 +1,9 @@
 // Facts for the header, hero, footer, menu and page metadata, each tagged with its source.
 //   [M] = content/master-resume.txt (section › subsection, bullet n)
-//   [N] = Nate's own wording or decision, relayed by the lead (2026-11-14)
+//   [N] = Nate's own wording or decision, relayed by the lead (dated where it matters)
 // Do not add a number, date, tool or outcome here without a source tag.
 // "–\u2060Madison": the word joiner (U+2060) keeps "UW–Madison" on one line at the dash.
+// Plain-text copies (meta tags, the link-preview image) drop it: see `withoutWordJoiners`.
 
 export const profile = {
   name: "Nate Kim", // [N] the name he goes by
@@ -16,20 +17,21 @@ export const profile = {
   resume: "/Nathanael_Kim_Resume.pdf", // [N] public copy, phone and address removed
   orin: "https://readorin.com", // [M] Projects › Orin
   orinRepo: "https://github.com/NateTKim/Orin", // [N] the public Orin repo
+  // [N] The production host (Vercel). Canonical links, og:url and the link-preview image use
+  // it when Vercel's VERCEL_PROJECT_PRODUCTION_URL isn't set, so they never point at localhost.
+  siteHost: "natekim-three.vercel.app",
 } as const;
 
-// [N] Hero copy. The sub-line uses the resume's exact title: [M] Experience › Alphaeon Credit
-// (Software Engineer Intern, May 2026 – August 2026) and [M] Education.
+// [N] Hero copy, Nate's wording (2026-11-26). The title is the resume's: [M] Experience ›
+// Alphaeon Credit (Software Engineer Intern, May 2026 – Aug 2026). "Junior" and "finance and
+// computer science" are his short form of [M] Education.
 export const hero = {
-  lead: "I write code, run teams & ",
-  italic: "read balance sheets.",
-  sub: "Finance and computer science at UW–\u2060Madison. Software Engineer Intern at Alphaeon Credit, summer 2026.",
-} as const;
-
-// [N] The intro card's two lines, worded by the lead (2026-11-20). Line 2 is a short form of
-// [M] Education, like `roleLine` above.
-export const intro = {
   lead: "Hi, I’m ",
   italic: "Nate.",
-  sub: "Finance & Computer Science · UW–\u2060Madison",
+  sub: "Junior at UW–\u2060Madison studying finance and computer science. Software Engineer Intern at Alphaeon Credit, summer 2026.",
 } as const;
+
+/** `text` without word joiners (U+2060), for plain text that HTML never line-wraps (meta tags). */
+export function withoutWordJoiners(text: string) {
+  return text.replace(/\u2060/g, "");
+}

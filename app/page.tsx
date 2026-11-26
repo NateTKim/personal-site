@@ -1,3 +1,4 @@
+import type { ResolvingMetadata } from "next";
 import { StatsRow } from "@/components/home/stats-row";
 import { Hero } from "@/components/site/hero";
 import { SiteHeader } from "@/components/site/site-header";
@@ -6,6 +7,17 @@ import { BusinessSoftwareCard } from "@/components/work/business-software-card";
 import { ChewyCard } from "@/components/work/chewy-card";
 import { CodeForGoodCard } from "@/components/work/codeforgood-card";
 import { OrinCard } from "@/components/work/orin-card";
+import { profile } from "@/content/profile";
+import { pageMetadata, siteDescription } from "@/lib/page-metadata";
+
+// The layout's title and description, plus this page's canonical link and og:url.
+export function generateMetadata(_: PageProps<"/">, parent: ResolvingMetadata) {
+  return pageMetadata(parent, {
+    path: "/",
+    description: siteDescription,
+    openGraph: { title: profile.name, type: "website" },
+  });
+}
 
 export default function Home() {
   return (

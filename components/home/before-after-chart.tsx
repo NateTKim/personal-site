@@ -16,8 +16,9 @@ const pctOf = (scale: Scale) => (seconds: number) => `${(seconds / scale.maxSeco
  *
  * Honesty rules: every bar in a chart shares one scale that starts at zero; a
  * range is drawn as a range (solid to its low end, hatched to its high end), an
- * upper bound is drawn at the bound, and a removed step is an empty track (no
- * bar: the step no longer exists, it doesn't take "almost no time"). The accent
+ * upper bound is drawn at the bound, and a removed step gets no bar and no track:
+ * a marker at zero with its words on the bar's row (the step no longer exists, it
+ * doesn't take "almost no time", and there is no number to draw). The accent
  * color marks the "after" state only.
  */
 export function BeforeAfterChart({
@@ -95,6 +96,25 @@ function Measure({
   scale: Scale;
   after?: boolean;
 }) {
+  const valueClass = cn(
+    "text-xs leading-4 tabular-nums",
+    after ? "font-medium text-data" : "text-foreground",
+  );
+  if (value.kind === "removed") {
+    return (
+      <dd className="flex flex-col gap-1.5">
+        <p className="label-text text-subtle-foreground">
+          {label}
+          <span className="sr-only">:</span>
+        </p>
+        {/* In place of the bar: a marker at zero, then the words, on one row (no track). */}
+        <p className="flex items-center gap-2">
+          <span aria-hidden className="h-3.5 w-0.5 shrink-0 rounded-full bg-data" />
+          <span className={valueClass}>{value.label}</span>
+        </p>
+      </dd>
+    );
+  }
   return (
     <dd className="flex flex-col gap-1.5">
       {/* Wraps the value under the label when both don't fit on one line. */}
@@ -103,14 +123,7 @@ function Measure({
           {label}
           <span className="sr-only">:</span>
         </span>
-        <span
-          className={cn(
-            "text-xs leading-4 tabular-nums",
-            after ? "font-medium text-data" : "text-foreground",
-          )}
-        >
-          {value.label}
-        </span>
+        <span className={valueClass}>{value.label}</span>
       </p>
       <Bar value={value} hatchId={hatchId} scale={scale} after={after} />
     </dd>
@@ -123,7 +136,7 @@ function Bar({
   scale,
   after,
 }: {
-  value: Duration;
+  value: Exclude<Duration, { kind: "removed" }>;
   hatchId: string;
   scale: Scale;
   after: boolean;

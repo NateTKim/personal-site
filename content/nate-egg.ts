@@ -106,7 +106,7 @@ export const nateEgg = {
     // [M] Experience › Business-Software by Gate58 Marketing: "May 2025 – Sep 2025"
     {
       dates: "May 2025 – Sep 2025",
-      what: "Business-Software by Gate58 Marketing, Full Stack Developer Intern",
+      what: "Business-Software by Gate58 Marketing, Full-Stack Developer Intern",
     },
     // [M] Leadership & Activities › CodeForGood: "Jan 2026 – Present"
     { dates: "Jan 2026 – Present", what: "CodeForGood, President" },

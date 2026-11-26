@@ -26,8 +26,6 @@ export function Hero() {
             className="text-[clamp(2.375rem,1.1rem+5.6vw,6rem)] leading-[1.02] display-type text-balance text-foreground text-glow"
           >
             {hero.lead}
-            {/* The italic phrase always starts its own line. */}
-            <br />
             <span className="serif-italic">{hero.italic}</span>
           </h1>
           <p className="mt-6 max-w-[34rem] text-[17px] leading-relaxed text-pretty text-muted-foreground sm:mt-8 sm:text-xl sm:leading-relaxed">

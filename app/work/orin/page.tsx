@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { ResolvingMetadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import { OrinDemo } from "@/components/orin/orin-demo";
 import { WorkPage, workMetadata } from "@/components/work/work-page";
@@ -12,7 +12,9 @@ import { cn } from "@/lib/utils";
 const orinSans = Inter({ subsets: ["latin"], variable: "--font-orin-sans" });
 const orinSerif = Fraunces({ subsets: ["latin"], variable: "--font-orin-serif" });
 
-export const metadata: Metadata = workMetadata("orin");
+export function generateMetadata(_: PageProps<"/work/orin">, parent: ResolvingMetadata) {
+  return workMetadata("orin", parent);
+}
 
 export default function OrinPage() {
   return (
