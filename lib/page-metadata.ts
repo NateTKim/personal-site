@@ -2,11 +2,11 @@ import type { Metadata, ResolvingMetadata } from "next";
 import { hero, profile, withoutWordJoiners } from "@/content/profile";
 
 /**
- * The site's production URL, the base for canonical links, og:url and the link-preview image:
- * Vercel's production host when it is set (it is at build time on Vercel), otherwise the
- * fallback host in content/profile.ts. Never localhost.
+ * The site's one production URL (content/profile.ts), the base for canonical links, og:url and
+ * the link-preview image. Fixed rather than read from Vercel's environment, so every build,
+ * local or on Vercel, names the same address. Never localhost, never *.vercel.app.
  */
-export const siteUrl = `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL || profile.siteHost}`;
+export const siteUrl = `https://${profile.siteHost}`;
 
 /** The hero sub-line as plain text: the site's description in meta tags. */
 export const siteDescription = withoutWordJoiners(hero.sub);

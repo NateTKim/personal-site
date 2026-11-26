@@ -59,5 +59,6 @@ node --env-file=<path-to-Orin>/.env.local scripts/export-orin-demo.mjs AAPL NVDA
 - The Chewy pitch deck is intentionally not linked.
 - `content/Nathanael_Kim_Resume_Public.pdf` is gitignored: it still contains an unused PDF object
   with the old header (phone, ZIP). Only the rebuilt copy in `public/` ships.
-- Deployed on Vercel at https://natekim-three.vercel.app (no custom domain yet). Canonical links,
-  og:url and the preview image use `VERCEL_PROJECT_PRODUCTION_URL`, else `profile.siteHost`.
+- Live at https://nathanaelkim.com (Vercel; every push to `main` deploys). It is the only
+  production URL: canonical links, og:url and the preview image use `profile.siteHost`, and
+  www.nathanaelkim.com and natekim-three.vercel.app redirect to it (Vercel's Domains settings).

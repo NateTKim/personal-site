@@ -17,9 +17,10 @@ export const profile = {
   resume: "/Nathanael_Kim_Resume.pdf", // [N] public copy, phone and address removed
   orin: "https://readorin.com", // [M] Projects › Orin
   orinRepo: "https://github.com/NateTKim/Orin", // [N] the public Orin repo
-  // [N] The production host (Vercel). Canonical links, og:url and the link-preview image use
-  // it when Vercel's VERCEL_PROJECT_PRODUCTION_URL isn't set, so they never point at localhost.
-  siteHost: "natekim-three.vercel.app",
+  // [N] The production domain (2026-11-26): the site's only production URL. Canonical links,
+  // og:url and the link-preview image always use it; the old *.vercel.app address and www
+  // redirect here (set in Vercel's Domains settings).
+  siteHost: "nathanaelkim.com",
 } as const;
 
 // [N] Hero copy, Nate's wording (2026-11-26). The title is the resume's: [M] Experience ›
