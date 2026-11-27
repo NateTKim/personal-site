@@ -1,0 +1,12 @@
+/audit-evidence-*/
+/portfolio-audit-evidence-*.zip
+/remediation-evidence/
+/.codex/
+/.claude/agents/
+/.env*
+/.vercel/
+*.pem
+/content/*.pdf
+/content/master-resume.txt
+/content/master_resume.txt.txt
+/content/photos/

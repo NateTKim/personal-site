@@ -1,21 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { ArrowUpRight, ChevronDown, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { WindowFrame } from "@/components/site/window-frame";
 import { cn } from "@/lib/utils";
 import { DEMO_TICKERS, TICKER_RE, type DemoSample, type DemoTicker } from "@/lib/orin/demo-data";
-import { nateEgg } from "@/content/nate-egg";
 import { OrinResult, formatDate } from "./orin-result";
 import { NateResult } from "./nate-result";
 
-type View =
-  | { kind: "sample"; ticker: DemoTicker }
-  | { kind: "nate" }
-  | { kind: "live"; ticker: string }
-  | { kind: "invalid" };
+type View = { kind: "sample"; ticker: DemoTicker } | { kind: "nate" } | { kind: "live"; ticker: string };
 
 function isDemoTicker(t: string): t is DemoTicker {
   return (DEMO_TICKERS as readonly string[]).includes(t);
@@ -29,8 +24,7 @@ function isDemoTicker(t: string): t is DemoTicker {
  * attaches Orin's fonts there (their CSS variables are set on it and nowhere
  * else). The window title works as the address bar.
  *
- * With JS off, the server HTML holds the AAPL sample in full (the <noscript>
- * style below removes the preview clip) and the revenue chart's data table.
+ * Without JavaScript, the AAPL sample and its data table remain available.
  */
 export function OrinDemo({
   samples,
@@ -43,15 +37,21 @@ export function OrinDemo({
   const [input, setInput] = useState("");
   const [announce, setAnnounce] = useState("");
   const [expanded, setExpanded] = useState(false);
-  const resultRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    console.info("%cOrin demo: try the ticker NATE.", "font-weight:600");
-  }, []);
+  const [inputError, setInputError] = useState("");
 
   function show(raw: string) {
-    const t = raw.trim().toUpperCase();
-    if (!t) return;
+    const symbol = raw.trim();
+    if (!TICKER_RE.test(symbol)) {
+      setInputError(
+        !symbol
+          ? "Enter a stock ticker, such as AAPL."
+          : "Enter a ticker of up to 10 characters, such as AAPL or BRK.B.",
+      );
+      setAnnounce("");
+      return;
+    }
+    const t = symbol.toUpperCase();
+    setInputError("");
     setExpanded(false);
     if (isDemoTicker(t)) {
       setView({ kind: "sample", ticker: t });
@@ -59,25 +59,35 @@ export function OrinDemo({
     } else if (t === "NATE") {
       setView({ kind: "nate" });
       setAnnounce("Showing the NATE easter egg, a joke result built from Nate's resume.");
-    } else if (TICKER_RE.test(t)) {
-      setView({ kind: "live", ticker: t });
-      setAnnounce(`${t} isn't one of the bundled samples. A link to run it live on Orin is shown.`);
     } else {
-      setView({ kind: "invalid" });
-      setAnnounce("That doesn't look like a stock ticker.");
+      setView({ kind: "live", ticker: t });
+      setAnnounce(`${t} isn't one of the bundled samples. A link to look it up on Orin is shown.`);
     }
   }
 
-  const currentTicker =
-    view.kind === "sample"
-      ? view.ticker
-      : view.kind === "nate"
-        ? "NATE"
-        : view.kind === "live"
-          ? view.ticker
-          : "";
-  const url = `readorin.com/${currentTicker ? `?ticker=${currentTicker}` : ""}`;
+  const currentTicker = view.kind === "sample" ? view.ticker : view.kind === "nate" ? "NATE" : view.ticker;
+  const url = `readorin.com/?ticker=${currentTicker}`;
   const sample = view.kind === "sample" ? samples[view.ticker] : null;
+  const disclosure = (
+    <div className="js-only flex justify-center">
+      <button
+        type="button"
+        aria-expanded={expanded}
+        aria-controls="orin-analysis"
+        onClick={() => setExpanded((value) => !value)}
+        className="inline-flex h-10 items-center gap-2 rounded-full bg-card px-5 text-sm font-medium text-foreground shadow-card-lg ring-1 ring-sand-900/10 transition-colors hover:bg-brand-50 hover:text-brand-700"
+      >
+        {expanded ? "Show less" : "Show the full analysis"}
+        <ChevronDown
+          className={cn(
+            "size-4 transition-transform duration-200 motion-reduce:transition-none",
+            expanded && "rotate-180",
+          )}
+          aria-hidden
+        />
+      </button>
+    </div>
+  );
 
   return (
     <WindowFrame size="sm" title={url} bodyClassName={cn("orin-theme", fontClassName)}>
@@ -92,26 +102,32 @@ export function OrinDemo({
           <div className="flex flex-wrap items-center justify-between gap-4">
             <span className="font-display text-2xl font-semibold tracking-tight text-foreground">Orin</span>
             <form
-              className="flex w-full gap-2 @sm:w-auto"
+              className="js-only flex w-full items-end gap-2 @sm:w-auto"
               onSubmit={(e) => {
                 e.preventDefault();
                 show(input);
               }}
             >
-              <label htmlFor="demo-ticker" className="sr-only">
-                Stock ticker
-              </label>
-              <Input
-                id="demo-ticker"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Any ticker, e.g. MSFT"
-                maxLength={10}
-                autoComplete="off"
-                autoCapitalize="characters"
-                spellCheck={false}
-                className="h-11 min-w-0 flex-1 rounded-xl bg-card text-base shadow-card @sm:w-40 @sm:flex-none @lg:w-48"
-              />
+              <div className="flex min-w-0 flex-1 flex-col gap-1 @sm:flex-none">
+                <label htmlFor="demo-ticker" className="text-xs text-muted-foreground">
+                  Stock ticker
+                </label>
+                <Input
+                  id="demo-ticker"
+                  value={input}
+                  onChange={(e) => {
+                    setInput(e.target.value);
+                    if (inputError) setInputError("");
+                  }}
+                  placeholder="e.g. MSFT"
+                  aria-invalid={inputError ? true : undefined}
+                  aria-describedby="demo-ticker-error"
+                  autoComplete="off"
+                  autoCapitalize="characters"
+                  spellCheck={false}
+                  className="h-11 rounded-xl bg-card text-base shadow-card @sm:w-40 @lg:w-48"
+                />
+              </div>
               <Button
                 type="submit"
                 size="lg"
@@ -121,9 +137,12 @@ export function OrinDemo({
               </Button>
             </form>
           </div>
+          <p id="demo-ticker-error" role="alert" className="js-only text-sm text-destructive empty:sr-only">
+            {inputError}
+          </p>
 
-          <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Sample tickers">
-            <span className="mr-1 text-sm text-muted-foreground">Real samples:</span>
+          <div className="js-only flex flex-wrap items-center gap-2" role="group" aria-label="Sample tickers">
+            <span className="mr-1 text-sm text-muted-foreground">Cached samples:</span>
             {DEMO_TICKERS.map((t) => {
               const active = view.kind === "sample" && view.ticker === t;
               return (
@@ -150,7 +169,9 @@ export function OrinDemo({
             <p className="flex items-start gap-2 rounded-xl bg-sand-100 px-3.5 py-2.5 text-xs leading-5 text-sand-700 ring-1 ring-sand-900/5">
               <Info className="mt-0.5 size-3.5 shrink-0" aria-hidden />
               <span>
-                <strong className="font-semibold">Sample output · not investment advice.</strong>{" "}
+                <strong className="font-semibold">
+                  Historical demo · cached sample · not investment advice.
+                </strong>{" "}
                 {sample.result.snapshot.companyName} {sample.source.form} for the{" "}
                 {sample.source.form === "10-Q" ? "quarter" : "fiscal year"} ended{" "}
                 {formatDate(sample.source.periodEnd)}, filed {formatDate(sample.result.snapshot.filedDate)}.
@@ -165,66 +186,14 @@ export function OrinDemo({
           </div>
         </div>
 
-        {/* The result is shown as a preview so the page stays skimmable;
-            "Show the full analysis" opens the rest in place. With JS off the
-            <noscript> style below removes the clip. */}
         <div className="relative p-4 @lg:px-8 @lg:py-6">
-          <div
-            ref={resultRef}
-            id="orin-demo-result"
-            className={cn(
-              "demo-result flex flex-col gap-6",
-              !expanded && "max-h-[62rem] overflow-hidden @4xl:max-h-[56rem]",
-            )}
-          >
-            {view.kind === "sample" && sample && <OrinResult data={sample.result} />}
-            {view.kind === "nate" && <NateResult />}
+          <div id="orin-demo-result" className="flex flex-col gap-6">
+            {sample && <OrinResult data={sample.result} expanded={expanded} disclosure={disclosure} />}
+            {view.kind === "nate" && <NateResult expanded={expanded} disclosure={disclosure} />}
             {view.kind === "live" && <RunLive ticker={view.ticker} />}
-            {view.kind === "invalid" && (
-              <p className="rounded-2xl bg-card p-6 text-sm text-muted-foreground shadow-card ring-1 ring-sand-900/8">
-                That doesn&apos;t look like a stock ticker. Try something like AAPL.
-              </p>
-            )}
-
-            <p className="border-t border-border pt-5 text-xs leading-5 text-muted-foreground">
-              {view.kind === "nate"
-                ? nateEgg.footer
-                : "All numbers come straight from the company's official SEC report. The explanations are AI-written using only those numbers. Not investment advice."}
-            </p>
           </div>
-
-          {(view.kind === "sample" || view.kind === "nate") && (
-            <div
-              className={cn(
-                "demo-expand flex justify-center",
-                expanded
-                  ? "pt-6"
-                  : "absolute inset-x-0 bottom-0 bg-gradient-to-t from-background from-35% to-transparent pt-28 pb-6",
-              )}
-            >
-              <button
-                type="button"
-                aria-expanded={expanded}
-                aria-controls="orin-demo-result"
-                onClick={() => {
-                  if (expanded) resultRef.current?.scrollIntoView({ block: "nearest" });
-                  setExpanded((e) => !e);
-                }}
-                className="inline-flex h-10 items-center gap-2 rounded-full bg-card px-5 text-sm font-medium text-foreground shadow-card-lg ring-1 ring-sand-900/10 transition-colors hover:bg-brand-50 hover:text-brand-700"
-              >
-                {expanded ? "Show less" : "Show the full analysis"}
-                <ChevronDown
-                  className={cn(
-                    "size-4 transition-transform duration-200 motion-reduce:transition-none",
-                    expanded && "rotate-180",
-                  )}
-                  aria-hidden
-                />
-              </button>
-            </div>
-          )}
           <noscript>
-            <style>{`.demo-result{max-height:none!important;overflow:visible!important}.demo-expand{display:none!important}`}</style>
+            <style>{".orin-analysis{display:flex!important}"}</style>
           </noscript>
         </div>
       </div>
@@ -239,8 +208,7 @@ function RunLive({ ticker }: { ticker: string }) {
         {ticker} isn&apos;t one of the four samples here.
       </h3>
       <p className="max-w-[60ch] text-[15px] leading-7 text-foreground/90">
-        This page only bundles real Orin output for AAPL, NVDA, TSLA and AMZN. Orin itself can pull {ticker}
-        &apos;s latest 10-Q or 10-K from SEC EDGAR and explain it.
+        This demo contains four cached samples. You can look up {ticker} on the live Orin site.
       </p>
       <a
         href={`https://readorin.com/?ticker=${encodeURIComponent(ticker)}`}
@@ -248,7 +216,7 @@ function RunLive({ ticker }: { ticker: string }) {
         rel="noopener noreferrer"
         className="inline-flex h-11 items-center gap-2 rounded-full bg-primary px-5 text-[15px] font-medium text-primary-foreground shadow-[0_6px_16px_-8px_var(--color-brand-600)] transition-colors hover:bg-brand-700"
       >
-        Run {ticker} live on Orin
+        Look up {ticker} on Orin
         <ArrowUpRight className="size-4" aria-hidden />
         <span className="sr-only">(opens readorin.com in a new tab)</span>
       </a>

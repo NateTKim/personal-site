@@ -53,16 +53,16 @@ export default function RevenueChart({ history }: { history: HistoryPoint[] }) {
         <AreaChart accessibilityLayer={false} data={data} margin={{ top: 8, right: 4, bottom: 0, left: 4 }}>
           <defs>
             <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.35} />
-              <stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0} />
+              <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.35} />
+              <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid vertical={false} stroke="var(--color-border)" strokeOpacity={0.7} />
+          <CartesianGrid vertical={false} stroke="var(--border)" strokeOpacity={0.7} />
           <XAxis
             dataKey="label"
             tickLine={false}
             axisLine={false}
-            tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
+            tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
             dy={6}
           />
           <YAxis
@@ -70,7 +70,7 @@ export default function RevenueChart({ history }: { history: HistoryPoint[] }) {
             tickLine={false}
             axisLine={false}
             tickFormatter={(v: number) => formatUsdCompact(v)}
-            tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
+            tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
             domain={["auto", "auto"]}
           />
           <Tooltip
@@ -81,7 +81,7 @@ export default function RevenueChart({ history }: { history: HistoryPoint[] }) {
           <Area
             type="monotone"
             dataKey="revenue"
-            stroke="var(--color-primary)"
+            stroke="var(--primary)"
             strokeWidth={2}
             fill="url(#revenueFill)"
             dot={false}

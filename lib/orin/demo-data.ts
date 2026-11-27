@@ -28,5 +28,5 @@ export const demoSamples: Record<DemoTicker, DemoSample> = {
   AMZN: AMZN as unknown as DemoSample,
 };
 
-/** Orin's own ticker check (app/api/filing/[ticker]/route.ts). */
-export const TICKER_RE = /^[A-Za-z][A-Za-z.\-]{0,9}$/;
+/** Check the demo's input syntax without implying that a symbol is listed. */
+export const TICKER_RE = /^(?=.{1,10}$)[A-Za-z]+(?:[.-][A-Za-z]+)*$/;

@@ -10,6 +10,28 @@ npm run dev        # http://localhost:3000
 npm run build && npm start
 ```
 
+## Regression checks
+
+Run lint and TypeScript, then build the site and leave the production server
+running on port 3200 in another terminal.
+
+```powershell
+npm run lint
+npx tsc --noEmit
+npm run build
+npm run start -- --hostname 127.0.0.1 --port 3200
+```
+
+`npm test` uses Node's built-in test runner to verify HTTP routes, metadata,
+private-route exclusion, and public asset contracts. It needs only the running
+build. For the browser suite, point `AUDIT_TOOL_DIR` at a directory containing
+an existing Playwright and axe-core installation and set
+`PLAYWRIGHT_BROWSERS_PATH` to its installed browsers, then run
+`npm run test:browser`. The external tool directory defaults to
+`node_modules/.portfolio-audit` for the audit setup. The suite covers
+Chromium, Firefox, and WebKit, with axe checks in Chromium. Neither npm script
+installs tooling. Use `TEST_SITE_URL` to set a different local origin.
+
 ## Where things live
 
 | What                                                               | Where                                                                                        |
@@ -60,5 +82,6 @@ node --env-file=<path-to-Orin>/.env.local scripts/export-orin-demo.mjs AAPL NVDA
 - `content/Nathanael_Kim_Resume_Public.pdf` is gitignored: it still contains an unused PDF object
   with the old header (phone, ZIP). Only the rebuilt copy in `public/` ships.
 - Live at https://nathanaelkim.com (Vercel; every push to `main` deploys). It is the only
-  production URL: canonical links, og:url and the preview image use `profile.siteHost`, and
-  www.nathanaelkim.com and natekim-three.vercel.app redirect to it (Vercel's Domains settings).
+  production URL. Canonical links, og:url and the preview image use `profile.siteHost`.
+  Vercel handles hostname redirects in the project's Domains settings. The www alias
+  needs a valid certificate before it can redirect.

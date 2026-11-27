@@ -1,10 +1,12 @@
 // Easter egg: ticker NATE. Same layout as an Orin result, but every figure comes
 // from the master resume, through content/nate-egg.ts (each one tagged there).
 // It is labeled as a joke everywhere it appears. Add facts there, not here.
+import type { ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { HEALTH_COLORS } from "@/lib/orin/colors";
 import { nateEgg } from "@/content/nate-egg";
 import { profile } from "@/content/profile";
+import { cn } from "@/lib/utils";
 import {
   Bento,
   HealthCard,
@@ -16,7 +18,7 @@ import {
   cardShell,
 } from "./result-parts";
 
-export function NateResult() {
+export function NateResult({ expanded, disclosure }: { expanded: boolean; disclosure: ReactNode }) {
   const { notice, header, health, miss, stats, timeline, numbers, summary } = nateEgg;
   return (
     <div className="flex flex-col gap-6">
@@ -29,7 +31,7 @@ export function NateResult() {
         ticker={header.ticker}
         meta={header.meta}
         href={profile.resume}
-        hrefLabel={header.hrefLabel}
+        hrefLabel="Open public résumé (PDF)"
       />
 
       <HealthCard
@@ -43,45 +45,51 @@ export function NateResult() {
         disclaimer={health.disclaimer}
       />
 
-      <Bento
-        miss={<MissCard items={miss.items} caption={miss.caption} />}
-        side={
-          <>
-            <div className="grid grid-cols-3 gap-3">
-              {stats.map((s) => (
-                <StatCard
-                  key={s.label}
-                  label={s.label}
-                  explain={s.explain}
-                  value={s.value}
-                  change={s.change}
-                  emphasizeChangeColor={s.change !== null}
-                />
-              ))}
-            </div>
-            <Card className={cardShell}>
-              <CardContent className="flex flex-col gap-3 py-2">
-                <div className="flex flex-col gap-0.5">
-                  <h4 className="text-base font-semibold tracking-tight">Track record</h4>
-                  <p className="text-xs text-muted-foreground">Roles on the resume, oldest first</p>
-                </div>
-                <ol className="flex flex-col divide-y divide-border/70">
-                  {timeline.map((t) => (
-                    <li key={t.what} className="flex flex-col gap-0.5 py-2">
-                      <span className="text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
-                        {t.dates}
-                      </span>
-                      <span className="text-sm text-foreground/90">{t.what}</span>
-                    </li>
-                  ))}
-                </ol>
-              </CardContent>
-            </Card>
-            <MoreNumbers rows={numbers} />
-          </>
-        }
-        summary={<PlainEnglish intro={summary.intro} notable={summary.notable} />}
-      />
+      {disclosure}
+      <div id="orin-analysis" className={cn("orin-analysis flex-col gap-6", expanded ? "flex" : "hidden")}>
+        <Bento
+          miss={<MissCard items={miss.items} caption={miss.caption} />}
+          side={
+            <>
+              <div className="grid grid-cols-3 gap-3">
+                {stats.map((s) => (
+                  <StatCard
+                    key={s.label}
+                    label={s.label}
+                    explain={s.explain}
+                    value={s.value}
+                    change={s.change}
+                    emphasizeChangeColor={s.change !== null}
+                  />
+                ))}
+              </div>
+              <Card className={cardShell}>
+                <CardContent className="flex flex-col gap-3 py-2">
+                  <div className="flex flex-col gap-0.5">
+                    <h4 className="text-base font-semibold tracking-tight">Track record</h4>
+                    <p className="text-xs text-muted-foreground">Roles listed oldest first</p>
+                  </div>
+                  <ol className="flex flex-col divide-y divide-border/70">
+                    {timeline.map((t) => (
+                      <li key={t.what} className="flex flex-col gap-0.5 py-2">
+                        <span className="text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
+                          {t.dates}
+                        </span>
+                        <span className="text-sm text-foreground/90">{t.what}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </CardContent>
+              </Card>
+              <MoreNumbers rows={numbers} />
+            </>
+          }
+          summary={<PlainEnglish intro={summary.intro} notable={summary.notable} />}
+        />
+        <p className="border-t border-border pt-5 text-xs leading-5 text-muted-foreground">
+          {nateEgg.footer}
+        </p>
+      </div>
     </div>
   );
 }

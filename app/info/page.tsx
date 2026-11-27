@@ -18,7 +18,7 @@ import { EntryHeader, EntryList, PhotoSlots, infoBody } from "@/components/info/
 import { LabelSection } from "@/components/site/label-section";
 import { SiteHeader } from "@/components/site/site-header";
 import { MetaSep } from "@/components/work/work-card";
-import { pageMetadata } from "@/lib/page-metadata";
+import { pageMetadata, siteUrl } from "@/lib/page-metadata";
 
 export function generateMetadata(_: PageProps<"/info">, parent: ResolvingMetadata) {
   return pageMetadata(parent, {
@@ -34,8 +34,26 @@ export function generateMetadata(_: PageProps<"/info">, parent: ResolvingMetadat
  * use (one column below 768px). Contact is the site footer, on every page.
  */
 export default function InfoPage() {
+  const infoUrl = new URL("/info", siteUrl).href;
+  const profileData = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    url: infoUrl,
+    mainEntity: {
+      "@type": "Person",
+      "@id": `${infoUrl}#person`,
+      name: profile.legalName,
+      alternateName: profile.name,
+      url: infoUrl,
+      sameAs: [profile.linkedin, profile.github],
+    },
+  };
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(profileData).replace(/</g, "\\u003c") }}
+      />
       <SiteHeader active="info" />
       <main
         id="main"
