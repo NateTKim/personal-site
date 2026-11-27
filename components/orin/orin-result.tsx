@@ -23,7 +23,15 @@ import {
   cardShell,
 } from "./result-parts";
 
-const RevenueChart = dynamic(() => import("./revenue-chart"), { ssr: false });
+// The chart's stand-in, the same box while the chart is off screen (LazyWhenVisible) and while
+// its code downloads: the chart's exact size (its root is h-52 w-full, revenue-chart.tsx), so
+// nothing below it moves and the swap between the two is invisible.
+const chartPlaceholder = "h-52 w-full rounded-xl bg-sand-100/60";
+
+const RevenueChart = dynamic(() => import("./revenue-chart"), {
+  ssr: false,
+  loading: () => <div className={`js-only ${chartPlaceholder}`} aria-hidden />,
+});
 
 export function formatDate(iso: string): string {
   const d = new Date(`${iso}T00:00:00Z`);
@@ -118,7 +126,7 @@ export function OrinResult({ data, analysisInert }: { data: FilingApiSuccess; an
                         {snapshot.historyKind === "quarterly" ? "quarters" : "years"} in this sample
                       </p>
                     </div>
-                    <LazyWhenVisible placeholderClassName="h-52 w-full rounded-xl bg-sand-100/60">
+                    <LazyWhenVisible placeholderClassName={chartPlaceholder}>
                       <RevenueChart history={snapshot.history} />
                     </LazyWhenVisible>
                     <details>
