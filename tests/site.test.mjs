@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { after, test } from "node:test";
+import { startSite } from "./support/server.mjs";
 
-const origin = process.env.TEST_SITE_URL ?? "http://127.0.0.1:3200";
+const site = await startSite();
+after(() => site.stop());
+const { origin } = site;
 const canonical = "https://nathanaelkim.com";
 const routes = [
   "/",

@@ -12,25 +12,33 @@ npm run build && npm start
 
 ## Regression checks
 
-Run lint and TypeScript, then build the site and leave the production server
-running on port 3200 in another terminal.
+From a fresh clone:
 
-```powershell
-npm run lint
-npx tsc --noEmit
+```bash
+npm ci
+npx playwright install chromium firefox webkit   # Linux CI: add --with-deps
 npm run build
-npm run start -- --hostname 127.0.0.1 --port 3200
+npm test
 ```
 
-`npm test` uses Node's built-in test runner to verify HTTP routes, metadata,
-private-route exclusion, and public asset contracts. It needs only the running
-build. For the browser suite, point `AUDIT_TOOL_DIR` at a directory containing
-an existing Playwright and axe-core installation and set
-`PLAYWRIGHT_BROWSERS_PATH` to its installed browsers, then run
-`npm run test:browser`. The external tool directory defaults to
-`node_modules/.portfolio-audit` for the audit setup. The suite covers
-Chromium, Firefox, and WebKit, with axe checks in Chromium. Neither npm script
-installs tooling. Use `TEST_SITE_URL` to set a different local origin.
+Before a push, also run `npm run lint`, `npx tsc --noEmit` and `npx prettier --check .`.
+
+`npm test` runs `npm run test:http`, then `npm run test:browser`, on Node's built-in test
+runner. Each suite starts `next start` from the existing build on a free local port and stops
+it (with its child processes) when it ends; without a build it stops at once and asks for
+`npm run build`. Set `TEST_SITE_URL` to test a server that is already running instead.
+
+- `test:http`: routes, titles and descriptions, canonical links, security headers, sitemap,
+  robots, the `/orin` redirect, the 404 page, private paths and public assets.
+- `test:browser`: Chromium, Firefox and WebKit through Playwright, with standard and reduced
+  motion where it matters. It covers layout at nine widths, the command menu (focus trap and
+  restoration, the idle preload, typing straight after the first Ctrl+K), the Orin demo
+  (collapsed preview inert, labels, chart data and inputs, all checked against
+  `content/orin-demo/*.json`), the hero zoom, the site with JavaScript off, and axe-core on
+  every page in Chromium.
+
+Playwright and axe-core are dev dependencies imported only by `tests/`, so nothing from them
+reaches the client bundle.
 
 ## Where things live
 
