@@ -1,14 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, ChevronDown, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { WindowFrame } from "@/components/site/window-frame";
 import { cn } from "@/lib/utils";
-import { DEMO_TICKERS, TICKER_RE, type DemoSample, type DemoTicker } from "@/lib/orin/demo-data";
+import { useHydrated } from "@/lib/use-media-query";
+import { DEMO_TICKERS, type DemoSample, type DemoTicker } from "@/lib/orin/demo-data";
 import { OrinResult, formatDate } from "./orin-result";
 import { NateResult } from "./nate-result";
+import { ANALYSIS_ID } from "./result-parts";
+
+// Stricter than Orin's TICKER_RE: up to 10 characters, letters with single dots or hyphens between them.
+const TICKER_INPUT_RE = /^(?=.{1,10}$)[A-Za-z]+(?:[.-][A-Za-z]+)*$/;
 
 type View = { kind: "sample"; ticker: DemoTicker } | { kind: "nate" } | { kind: "live"; ticker: string };
 
@@ -24,7 +29,8 @@ function isDemoTicker(t: string): t is DemoTicker {
  * attaches Orin's fonts there (their CSS variables are set on it and nowhere
  * else). The window title works as the address bar.
  *
- * Without JavaScript, the AAPL sample and its data table remain available.
+ * With JS off, the server HTML holds the AAPL sample in full (the <noscript>
+ * style below removes the preview clip) and the revenue chart's data table.
  */
 export function OrinDemo({
   samples,
@@ -38,10 +44,18 @@ export function OrinDemo({
   const [announce, setAnnounce] = useState("");
   const [expanded, setExpanded] = useState(false);
   const [inputError, setInputError] = useState("");
+  const resultRef = useRef<HTMLDivElement>(null);
+  // The collapsed preview's faded part is inert only once hydrated, so the server HTML
+  // (all there is with JS off) never carries `inert`.
+  const analysisInert = useHydrated() && !expanded;
+
+  useEffect(() => {
+    console.info("%cOrin demo: try the ticker NATE.", "font-weight:600");
+  }, []);
 
   function show(raw: string) {
     const symbol = raw.trim();
-    if (!TICKER_RE.test(symbol)) {
+    if (!TICKER_INPUT_RE.test(symbol)) {
       setInputError(
         !symbol
           ? "Enter a stock ticker, such as AAPL."
@@ -68,26 +82,6 @@ export function OrinDemo({
   const currentTicker = view.kind === "sample" ? view.ticker : view.kind === "nate" ? "NATE" : view.ticker;
   const url = `readorin.com/?ticker=${currentTicker}`;
   const sample = view.kind === "sample" ? samples[view.ticker] : null;
-  const disclosure = (
-    <div className="js-only flex justify-center">
-      <button
-        type="button"
-        aria-expanded={expanded}
-        aria-controls="orin-analysis"
-        onClick={() => setExpanded((value) => !value)}
-        className="inline-flex h-10 items-center gap-2 rounded-full bg-card px-5 text-sm font-medium text-foreground shadow-card-lg ring-1 ring-sand-900/10 transition-colors hover:bg-brand-50 hover:text-brand-700"
-      >
-        {expanded ? "Show less" : "Show the full analysis"}
-        <ChevronDown
-          className={cn(
-            "size-4 transition-transform duration-200 motion-reduce:transition-none",
-            expanded && "rotate-180",
-          )}
-          aria-hidden
-        />
-      </button>
-    </div>
-  );
 
   return (
     <WindowFrame size="sm" title={url} bodyClassName={cn("orin-theme", fontClassName)}>
@@ -186,14 +180,56 @@ export function OrinDemo({
           </div>
         </div>
 
+        {/* The result is shown as a preview so the page stays skimmable: everything below
+            the health card (the result's Analysis) fades out under the button and is inert
+            until "Show the full analysis" opens it in place. With JS off the <noscript>
+            style below removes the clip. */}
         <div className="relative p-4 @lg:px-8 @lg:py-6">
-          <div id="orin-demo-result" className="flex flex-col gap-6">
-            {sample && <OrinResult data={sample.result} expanded={expanded} disclosure={disclosure} />}
-            {view.kind === "nate" && <NateResult expanded={expanded} disclosure={disclosure} />}
+          <div
+            ref={resultRef}
+            id="orin-demo-result"
+            className={cn(
+              "demo-result flex flex-col gap-6",
+              !expanded && "max-h-[62rem] overflow-hidden @4xl:max-h-[56rem]",
+            )}
+          >
+            {sample && <OrinResult data={sample.result} analysisInert={analysisInert} />}
+            {view.kind === "nate" && <NateResult analysisInert={analysisInert} />}
             {view.kind === "live" && <RunLive ticker={view.ticker} />}
           </div>
+
+          {(sample || view.kind === "nate") && (
+            <div
+              className={cn(
+                "demo-expand flex justify-center",
+                expanded
+                  ? "pt-6"
+                  : "absolute inset-x-0 bottom-0 bg-gradient-to-t from-background from-35% to-transparent pt-28 pb-6",
+              )}
+            >
+              <button
+                type="button"
+                aria-expanded={expanded}
+                aria-controls={ANALYSIS_ID}
+                onClick={() => {
+                  if (expanded) resultRef.current?.scrollIntoView({ block: "nearest" });
+                  setExpanded((e) => !e);
+                }}
+                className="inline-flex h-10 items-center gap-2 rounded-full bg-card px-5 text-sm font-medium text-foreground shadow-card-lg ring-1 ring-sand-900/10 transition-colors hover:bg-brand-50 hover:text-brand-700"
+              >
+                {expanded ? "Show less" : "Show the full analysis"}
+                <ChevronDown
+                  className={cn(
+                    "size-4 transition-transform duration-200 motion-reduce:transition-none",
+                    expanded && "rotate-180",
+                  )}
+                  aria-hidden
+                />
+              </button>
+            </div>
+          )}
           <noscript>
-            <style>{".orin-analysis{display:flex!important}"}</style>
+            <style>{`.demo-result{max-height:none!important;overflow:visible!important}.demo-expand{display:none!important}`}</style>
           </noscript>
         </div>
       </div>

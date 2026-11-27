@@ -1,13 +1,12 @@
 // Easter egg: ticker NATE. Same layout as an Orin result, but every figure comes
 // from the master resume, through content/nate-egg.ts (each one tagged there).
 // It is labeled as a joke everywhere it appears. Add facts there, not here.
-import type { ReactNode } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { HEALTH_COLORS } from "@/lib/orin/colors";
 import { nateEgg } from "@/content/nate-egg";
 import { profile } from "@/content/profile";
-import { cn } from "@/lib/utils";
 import {
+  Analysis,
   Bento,
   HealthCard,
   MissCard,
@@ -18,7 +17,7 @@ import {
   cardShell,
 } from "./result-parts";
 
-export function NateResult({ expanded, disclosure }: { expanded: boolean; disclosure: ReactNode }) {
+export function NateResult({ analysisInert }: { analysisInert: boolean }) {
   const { notice, header, health, miss, stats, timeline, numbers, summary } = nateEgg;
   return (
     <div className="flex flex-col gap-6">
@@ -31,7 +30,7 @@ export function NateResult({ expanded, disclosure }: { expanded: boolean; disclo
         ticker={header.ticker}
         meta={header.meta}
         href={profile.resume}
-        hrefLabel="Open public résumé (PDF)"
+        hrefLabel={header.hrefLabel}
       />
 
       <HealthCard
@@ -45,8 +44,7 @@ export function NateResult({ expanded, disclosure }: { expanded: boolean; disclo
         disclaimer={health.disclaimer}
       />
 
-      {disclosure}
-      <div id="orin-analysis" className={cn("orin-analysis flex-col gap-6", expanded ? "flex" : "hidden")}>
+      <Analysis inert={analysisInert}>
         <Bento
           miss={<MissCard items={miss.items} caption={miss.caption} />}
           side={
@@ -89,7 +87,7 @@ export function NateResult({ expanded, disclosure }: { expanded: boolean; disclo
         <p className="border-t border-border pt-5 text-xs leading-5 text-muted-foreground">
           {nateEgg.footer}
         </p>
-      </div>
+      </Analysis>
     </div>
   );
 }

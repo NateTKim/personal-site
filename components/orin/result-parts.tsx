@@ -6,6 +6,7 @@
 // browser frame, not a full viewport), props instead of direct data access
 // so the NATE easter egg can reuse the same layout, and full-strength
 // muted text for the 11px hints (Orin fades them to 70%, under AA contrast).
+// Analysis is the site's own: the part the demo's preview collapses.
 import { ArrowDownRight, ArrowUpRight, ExternalLink, Eye } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { buttonVariants } from "@/components/ui/button";
@@ -323,6 +324,22 @@ export function PlainEnglish({
         </CardContent>
       </Card>
     </section>
+  );
+}
+
+/** The id of a result's Analysis: what the demo's "Show the full analysis" button controls. */
+export const ANALYSIS_ID = "orin-analysis";
+
+/**
+ * Everything in a result below its health card. While the demo's preview is collapsed this
+ * part is clipped and faded out (orin-demo.tsx), and `inert` keeps it out of the
+ * accessibility tree and the keyboard order.
+ */
+export function Analysis({ inert, children }: { inert: boolean; children: React.ReactNode }) {
+  return (
+    <div id={ANALYSIS_ID} inert={inert} className="flex flex-col gap-6">
+      {children}
+    </div>
   );
 }
 

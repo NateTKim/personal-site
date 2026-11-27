@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, type ReactNode } from "react";
+import { useMemo } from "react";
 import dynamic from "next/dynamic";
 import { Activity } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,8 +11,8 @@ import { formatPct, formatPerShare, formatUsd, formatUsdCompact } from "@/lib/or
 import { parseSummary } from "@/lib/orin/parse-summary";
 import type { FilingApiSuccess } from "@/lib/orin/api-types";
 import type { MetricValue } from "@/lib/orin/types";
-import { cn } from "@/lib/utils";
 import {
+  Analysis,
   Bento,
   HealthCard,
   MissCard,
@@ -35,15 +35,7 @@ function metricValue(m: MetricValue, fmt: (v: number) => string): string | null 
 }
 
 /** Orin's results screen for one real, cached analysis. */
-export function OrinResult({
-  data,
-  expanded,
-  disclosure,
-}: {
-  data: FilingApiSuccess;
-  expanded: boolean;
-  disclosure: ReactNode;
-}) {
+export function OrinResult({ data, analysisInert }: { data: FilingApiSuccess; analysisInert: boolean }) {
   const { snapshot, summary, summaryNote } = data;
   const m = snapshot.metrics;
   const sections = useMemo(() => parseSummary(summary ?? ""), [summary]);
@@ -89,8 +81,7 @@ export function OrinResult({
         </section>
       )}
 
-      {disclosure}
-      <div id="orin-analysis" className={cn("orin-analysis flex-col gap-6", expanded ? "flex" : "hidden")}>
+      <Analysis inert={analysisInert}>
         <Bento
           miss={<MissCard items={sections.downplaying} empty={summaryNote ?? undefined} />}
           side={
@@ -209,10 +200,10 @@ export function OrinResult({
           }
         />
         <p className="border-t border-border pt-5 text-xs leading-5 text-muted-foreground">
-          Figures are reported in or derived from SEC filings. Orin calculates the health score and generates
-          the explanations. Not investment advice.
+          Figures are reported in or derived from SEC filings. Orin calculates the health score; the
+          explanations are AI-written using only those figures. Not investment advice.
         </p>
-      </div>
+      </Analysis>
     </div>
   );
 }

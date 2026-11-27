@@ -20,6 +20,18 @@ export function useMediaQuery(query: string, serverValue: boolean): boolean {
 
 const noop = () => () => {};
 
+/**
+ * False in the server HTML and during hydration, true once the client has taken over, so
+ * the server HTML never carries client-only state and hydration always matches it.
+ */
+export function useHydrated(): boolean {
+  return useSyncExternalStore(
+    noop,
+    () => true,
+    () => false,
+  );
+}
+
 /** "⌘K" on Apple devices, "Ctrl K" elsewhere ("⌘K" during SSR). */
 export function useShortcutLabel(): string {
   return useSyncExternalStore(

@@ -17,7 +17,7 @@ export const nateEgg = {
     ticker: "NATE",
     // [M] the earliest entry starts Jun 2021 (Experience › Concordia University Chicago)
     meta: "Latest report (resume) · covers June 2021 to the present",
-    hrefLabel: "Read the official resume",
+    hrefLabel: "Open public résumé (PDF)",
   },
 
   health: {
