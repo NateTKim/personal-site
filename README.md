@@ -22,6 +22,8 @@ npm test
 ```
 
 Before a push, also run `npm run lint`, `npx tsc --noEmit` and `npx prettier --check .`.
+Run `tsc` after a build or `next dev`: they generate `next-env.d.ts` and the route types
+(`PageProps`, `LayoutProps`) it needs, so in a fresh clone it fails before the first build.
 
 `npm test` runs `npm run test:http`, then `npm run test:browser`, on Node's built-in test
 runner. Each suite starts `next start` from the existing build on a free local port and stops
