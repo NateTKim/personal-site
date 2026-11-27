@@ -294,7 +294,9 @@ export const writing = [
     coAuthor: "Co-written with Allen Zhao", // [N] the journal's byline: "Allen Zhao & Nate Kim"
     issue: "Vol. X, Issue II, Spring/Summer 2025", // [N] from the issue; [M] the year
     href: "https://drive.google.com/file/d/1tpSQ3IFCPbYTfhTaUXy3XrCgjfJS5vFI/view", // [N] the full issue
-    linkLabel: "Read it: full issue PDF, page 23", // [N] the article is on page 23
+    // [N] the issue's contents list the article at page 21; the printed folios run four behind the
+    // PDF's own page numbers, so it starts on page 25 of the 37-page PDF.
+    linkLabel: "Read it: full issue PDF, page 21 (PDF page 25)",
   },
 ] as const;
 

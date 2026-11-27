@@ -29,7 +29,13 @@ function externalProps(external: boolean) {
  * <details> menu stands in for it. Each page passes its section (null on the 404 page),
  * so the server HTML and the client always agree.
  */
-export function SiteHeader({ active }: { active: (typeof SECTIONS)[number]["key"] | null }) {
+export function SiteHeader({
+  active,
+  sectionOnly = false,
+}: {
+  active: (typeof SECTIONS)[number]["key"] | null;
+  sectionOnly?: boolean;
+}) {
   return (
     <header className="fixed inset-x-0 top-0 z-40 border-b border-frame-divider bg-background/75 backdrop-blur-xl">
       <div className="mx-auto flex h-(--header-h) w-full max-w-[90rem] items-center justify-between gap-2 px-4 sm:px-6 md:grid md:grid-cols-[1fr_auto_1fr] md:gap-3 lg:px-8">
@@ -52,7 +58,7 @@ export function SiteHeader({ active }: { active: (typeof SECTIONS)[number]["key"
                   <li key={s.key}>
                     <Link
                       href={s.href}
-                      aria-current={current ? "page" : undefined}
+                      aria-current={current && !sectionOnly ? "page" : undefined}
                       className={cn(
                         "block rounded-[calc(var(--control-radius)-3px)] px-2.5 py-1 text-[13px] leading-5 transition-colors duration-150 md:px-3",
                         current

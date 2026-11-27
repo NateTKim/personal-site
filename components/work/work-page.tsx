@@ -49,7 +49,7 @@ export function WorkPage({ slug, visual }: { slug: WorkSlug; visual: React.React
 
   return (
     <>
-      <SiteHeader active="work" />
+      <SiteHeader active="work" sectionOnly />
       <main
         id="main"
         tabIndex={-1}

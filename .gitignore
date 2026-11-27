@@ -12,6 +12,10 @@
 
 # testing
 /coverage
+/audit-evidence-*/
+/portfolio-audit-evidence-*.zip
+/remediation-evidence/
+/.codex/
 
 # next.js
 /.next/

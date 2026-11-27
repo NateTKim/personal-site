@@ -10,6 +10,44 @@ npm run dev        # http://localhost:3000
 npm run build && npm start
 ```
 
+## Regression checks
+
+From a fresh clone:
+
+```bash
+npm ci
+npx playwright install chromium firefox webkit   # Linux CI: add --with-deps
+npm run build
+npm test
+```
+
+Before a push, also run `npm run lint`, `npx tsc --noEmit` and `npx prettier --check .`.
+Run `tsc` after a build or `next dev`: they generate `next-env.d.ts` and the route types
+(`PageProps`, `LayoutProps`) it needs, so in a fresh clone it fails before the first build.
+
+`npm test` runs `npm run test:http`, then `npm run test:browser`, on Node's built-in test
+runner. Each suite starts `next start` from the existing build on a free local port and stops
+it (with its child processes) when it ends; without a build it stops at once and asks for
+`npm run build`. Set `TEST_SITE_URL` to test a server that is already running instead.
+
+- `test:http`: routes, titles and descriptions, canonical links, security headers, sitemap,
+  robots, the `/orin` redirect, the 404 page, private paths and public assets.
+- `test:browser`: Chromium, Firefox and WebKit through Playwright, with standard and reduced
+  motion where it matters. It covers layout at nine widths, the command menu (focus trap and
+  restoration, the idle preload, typing straight after the first Ctrl+K), the Orin demo
+  (collapsed preview inert, every result's header and health card above the fade from 320 px
+  up, no shift while the chart loads, labels, chart data and inputs, all checked against
+  `content/orin-demo/*.json`), the hero zoom, the site with JavaScript off, and axe-core on
+  every page and the NATE result in Chromium.
+
+Playwright and axe-core are dev dependencies imported only by `tests/`, so nothing from them
+reaches the client bundle.
+
+CI (`.github/workflows/ci.yml`) runs the same checks on GitHub Actions for every pull request
+into `main` and every push to `main`: `npm ci`, Prettier, ESLint, the build, `tsc`, the three
+Playwright browsers (`--with-deps` on Ubuntu), then both suites. It runs with a read-only
+token, needs no secrets or untracked files, and deploys nothing; Vercel deploys on its own.
+
 ## Where things live
 
 | What                                                               | Where                                                                                        |
@@ -60,5 +98,9 @@ node --env-file=<path-to-Orin>/.env.local scripts/export-orin-demo.mjs AAPL NVDA
 - `content/Nathanael_Kim_Resume_Public.pdf` is gitignored: it still contains an unused PDF object
   with the old header (phone, ZIP). Only the rebuilt copy in `public/` ships.
 - Live at https://nathanaelkim.com (Vercel; every push to `main` deploys). It is the only
-  production URL: canonical links, og:url and the preview image use `profile.siteHost`, and
-  www.nathanaelkim.com and natekim-three.vercel.app redirect to it (Vercel's Domains settings).
+  production URL. Canonical links, og:url and the preview image use `profile.siteHost`.
+  Vercel handles hostname redirects in the project's Domains settings: natekim-three.vercel.app
+  redirects permanently (308) to https://nathanaelkim.com with the path and query kept, and
+  http redirects to https. One certificate covers nathanaelkim.com and \*.nathanaelkim.com.
+  The www.nathanaelkim.com setup (today a 307 redirect to the apex) is intentionally deferred
+  by the owner and is not a release blocker.

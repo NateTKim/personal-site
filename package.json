@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "npm run test:http && npm run test:browser",
+    "test:http": "node --test tests/site.test.mjs",
+    "test:browser": "node --test tests/browser.test.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
@@ -32,8 +35,10 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "axe-core": "4.14.1",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
+    "playwright": "1.65.1",
     "prettier": "^3.10.1",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "4.3.3",

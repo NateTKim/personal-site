@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Check, Copy } from "lucide-react";
 import { profile } from "@/content/profile";
 
@@ -15,10 +15,15 @@ export async function copyEmail(): Promise<boolean> {
 
 export function CopyEmail() {
   const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
+  const reset = useRef<number | undefined>(undefined);
+
+  useEffect(() => () => window.clearTimeout(reset.current), []);
 
   async function onClick() {
-    setState((await copyEmail()) ? "copied" : "failed");
-    window.setTimeout(() => setState("idle"), 2000);
+    const copied = await copyEmail();
+    window.clearTimeout(reset.current);
+    setState(copied ? "copied" : "failed");
+    if (copied) reset.current = window.setTimeout(() => setState("idle"), 2000);
   }
 
   return (
@@ -33,7 +38,7 @@ export function CopyEmail() {
         ) : (
           <Copy className="size-4" aria-hidden />
         )}
-        {state === "copied" ? "Copied" : "Copy email"}
+        {state === "copied" ? "Copied" : state === "failed" ? "Copy failed · Try again" : "Copy email"}
       </button>
       <span role="status" className="sr-only">
         {state === "copied"
