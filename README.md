@@ -98,8 +98,8 @@ node --env-file=<path-to-Orin>/.env.local scripts/export-orin-demo.mjs AAPL NVDA
   with the old header (phone, ZIP). Only the rebuilt copy in `public/` ships.
 - Live at https://nathanaelkim.com (Vercel; every push to `main` deploys). It is the only
   production URL. Canonical links, og:url and the preview image use `profile.siteHost`.
-  Vercel handles hostname redirects in the project's Domains settings: www.nathanaelkim.com
-  and natekim-three.vercel.app redirect to https://nathanaelkim.com with the path and query
-  kept, and http redirects to https. One certificate covers nathanaelkim.com and
-  \*.nathanaelkim.com. Checked 2026-11-27: the Vercel URL answers 308 (permanent), www
-  still answers 307 (temporary) and should be switched to 308 in the Domains settings.
+  Vercel handles hostname redirects in the project's Domains settings: natekim-three.vercel.app
+  redirects permanently (308) to https://nathanaelkim.com with the path and query kept, and
+  http redirects to https. One certificate covers nathanaelkim.com and \*.nathanaelkim.com.
+  The www.nathanaelkim.com setup (today a 307 redirect to the apex) is intentionally deferred
+  by the owner and is not a release blocker.
