@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { Search } from "lucide-react";
 import { useMediaQuery, useShortcutLabel } from "@/lib/use-media-query";
 
-// cmdk (and its dialog) only download the first time the menu opens.
+// cmdk (and its dialog) download once the page is idle, or when the menu is first used.
 const CommandMenu = dynamic(() => import("./command-menu").then((m) => m.CommandMenu), {
   ssr: false,
 });
@@ -18,6 +18,9 @@ export function CommandTrigger() {
   const desktop = useMediaQuery("(min-width: 48rem)", true);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const opener = useRef<HTMLElement | null>(null);
+  // What is typed between opening the menu and its search field taking focus (the menu's
+  // code may still be downloading). null while nothing is being kept.
+  const typed = useRef<string | null>(null);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -29,6 +32,7 @@ export function CommandTrigger() {
           opener.current =
             focused instanceof HTMLElement && focused !== document.body ? focused : triggerRef.current;
         }
+        typed.current = open ? null : "";
         setOpen(!open);
       }
     }
@@ -37,6 +41,44 @@ export function CommandTrigger() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
+  // While the menu is opening, characters and Backspace typed outside it are kept for the
+  // search field instead of reaching the page. Every other key (Enter, Escape, arrows, Tab,
+  // shortcuts) and IME composition pass through untouched.
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (typed.current === null || e.isComposing) return;
+      if (e.target instanceof Element && e.target.closest("[data-command-menu]")) return;
+      if (e.key === "Backspace") typed.current = typed.current.slice(0, -1);
+      else if (e.key.length === 1 && !e.metaKey && (!e.ctrlKey || e.getModifierState("AltGraph")))
+        typed.current += e.key;
+      else return;
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
+  }, []);
+
+  useEffect(() => {
+    // Warm the menu's code once the page is idle, so the first Cmd+K opens
+    // instantly and no keystrokes are lost while it downloads.
+    const warm = () => setLoaded(true);
+    const idle = window.requestIdleCallback
+      ? window.requestIdleCallback(warm, { timeout: 4000 })
+      : window.setTimeout(warm, 3000);
+    return () => {
+      if (window.cancelIdleCallback) window.cancelIdleCallback(idle);
+      else window.clearTimeout(idle);
+    };
+  }, []);
+
+  /** Hands the search field what was typed since the menu opened: once, then null. */
+  function takeTyped() {
+    const keys = typed.current;
+    typed.current = null;
+    return keys;
+  }
+
   return (
     <>
       <button
@@ -44,6 +86,7 @@ export function CommandTrigger() {
         type="button"
         onClick={() => {
           opener.current = triggerRef.current;
+          typed.current = "";
           setLoaded(true);
           setOpen(true);
         }}
@@ -59,7 +102,17 @@ export function CommandTrigger() {
         <Search className="hidden size-3.5 md:block" aria-hidden />
         <kbd className="hidden label-text md:inline">{shortcut}</kbd>
       </button>
-      {loaded && <CommandMenu open={open} onOpenChange={setOpen} opener={opener} />}
+      {loaded && (
+        <CommandMenu
+          open={open}
+          onOpenChange={(next) => {
+            if (!next) typed.current = null;
+            setOpen(next);
+          }}
+          opener={opener}
+          takeTyped={takeTyped}
+        />
+      )}
     </>
   );
 }

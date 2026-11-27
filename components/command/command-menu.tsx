@@ -40,14 +40,18 @@ export function CommandMenu({
   open,
   onOpenChange,
   opener,
+  takeTyped,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   opener: RefObject<HTMLElement | null>;
+  /** What was typed between opening and the search field's first focus (null after that). */
+  takeTyped: () => string | null;
 }) {
   const router = useRouter();
   const pathname = usePathname();
   const [status, setStatus] = useState("");
+  const [search, setSearch] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const focusAfterClose = useRef<HTMLElement | false | null>(null);
@@ -133,12 +137,16 @@ export function CommandMenu({
       open={open}
       onOpenChange={(nextOpen) => (nextOpen ? onOpenChange(true) : close())}
       onOpenChangeComplete={(isOpen) => {
-        if (!isOpen) setStatus("");
+        if (isOpen) return;
+        setStatus("");
+        setSearch("");
       }}
     >
       <Dialog.Portal>
         <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/60 backdrop-blur-[2px]" />
         <Dialog.Popup
+          // CommandTrigger leaves keys typed inside the menu alone.
+          data-command-menu=""
           initialFocus={() => (coarse ? closeRef.current : inputRef.current)}
           finalFocus={finalFocus}
           className="fixed top-[10vh] left-1/2 z-50 w-[min(560px,calc(100%-2rem))] -translate-x-1/2 overflow-clip rounded-(--frame-radius) border border-frame-border bg-frame font-sans text-foreground shadow-[inset_0_1px_0_0_var(--frame-highlight),0_40px_100px_-30px_rgb(0_0_0/0.9)] outline-none"
@@ -152,6 +160,13 @@ export function CommandMenu({
             </div>
             <Command.Input
               ref={inputRef}
+              value={search}
+              onValueChange={setSearch}
+              // Starts with what was typed while the menu was opening (or its code loading).
+              onFocus={() => {
+                const keys = takeTyped();
+                if (keys !== null) setSearch(keys);
+              }}
               tabIndex={coarse ? -1 : undefined}
               placeholder="Go to a page, copy the email…"
               className="h-12 w-full border-b border-frame-divider bg-transparent px-4 text-base text-foreground outline-none placeholder:text-subtle-foreground focus-visible:border-b-white/35 focus-visible:bg-white/[0.02] sm:text-[15px]"
