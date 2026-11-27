@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { ArrowUpRight, ChevronDown, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,6 +45,7 @@ export function OrinDemo({
   const [expanded, setExpanded] = useState(false);
   const [inputError, setInputError] = useState("");
   const resultRef = useRef<HTMLDivElement>(null);
+  const fadeRef = useRef<HTMLDivElement>(null);
   // The collapsed preview's faded part is inert only once hydrated, so the server HTML
   // (all there is with JS off) never carries `inert`.
   const analysisInert = useHydrated() && !expanded;
@@ -52,6 +53,36 @@ export function OrinDemo({
   useEffect(() => {
     console.info("%cOrin demo: try the ticker NATE.", "font-weight:600");
   }, []);
+
+  // The collapsed preview is clipped at its design height (62rem, 56rem in wide frames)
+  // unless that would put the result's header and health card under the fade, as in narrow
+  // frames and for NATE. --preview-min is the clip height that keeps them just above the
+  // fade's top edge, and the clip takes the larger of the two (the max-h classes below).
+  // It is read from the layout, so the fade's size needs no constant here: after hydration,
+  // before paint, and whenever a part of the result changes size (width, fonts). Until then,
+  // and with JS off, the design height applies.
+  useLayoutEffect(() => {
+    const clip = resultRef.current;
+    const fade = fadeRef.current;
+    const result = clip?.firstElementChild;
+    const kept = result?.querySelector(`:scope > #${ANALYSIS_ID}`)?.previousElementSibling;
+    if (!clip || !fade || !result || !kept || expanded) {
+      clip?.style.removeProperty("--preview-min");
+      return;
+    }
+    const measure = () => {
+      const box = clip.getBoundingClientRect();
+      // How far the fade reaches up from the clip's bottom edge (its height less the padding below).
+      const fadeRise = box.bottom - fade.getBoundingClientRect().top;
+      const keptBottom = kept.getBoundingClientRect().bottom - box.top;
+      clip.style.setProperty("--preview-min", `${Math.ceil(keptBottom + fadeRise)}px`);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(result);
+    for (const part of result.children) observer.observe(part);
+    return () => observer.disconnect();
+  }, [view, expanded]);
 
   function show(raw: string) {
     const symbol = raw.trim();
@@ -190,7 +221,8 @@ export function OrinDemo({
             id="orin-demo-result"
             className={cn(
               "demo-result flex flex-col gap-6",
-              !expanded && "max-h-[62rem] overflow-hidden @4xl:max-h-[56rem]",
+              !expanded &&
+                "max-h-[max(62rem,var(--preview-min,0px))] overflow-hidden @4xl:max-h-[max(56rem,var(--preview-min,0px))]",
             )}
           >
             {sample && <OrinResult data={sample.result} analysisInert={analysisInert} />}
@@ -200,6 +232,7 @@ export function OrinDemo({
 
           {(sample || view.kind === "nate") && (
             <div
+              ref={fadeRef}
               className={cn(
                 "demo-expand flex justify-center",
                 expanded
