@@ -1,0 +1,59 @@
+# Checks every pull request into main and every push to main. It needs only the tracked
+# repository: no secrets, no private files, and it never deploys (Vercel does that on its own).
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # A newer push to a pull request replaces its running check; runs on main always finish.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  checks:
+    name: Format, lint, build, types and regression tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check formatting
+        run: npx prettier --check .
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      # After the build: it generates next-env.d.ts and the route types tsc needs.
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      # Both suites start `next start` from the build themselves and stop it afterwards.
+      - name: HTTP regression tests
+        run: npm run test:http
+
+      - name: Browser regression tests (Chromium, Firefox, WebKit)
+        run: npm run test:browser

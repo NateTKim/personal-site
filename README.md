@@ -42,6 +42,11 @@ it (with its child processes) when it ends; without a build it stops at once and
 Playwright and axe-core are dev dependencies imported only by `tests/`, so nothing from them
 reaches the client bundle.
 
+CI (`.github/workflows/ci.yml`) runs the same checks on GitHub Actions for every pull request
+into `main` and every push to `main`: `npm ci`, Prettier, ESLint, the build, `tsc`, the three
+Playwright browsers (`--with-deps` on Ubuntu), then both suites. It runs with a read-only
+token, needs no secrets or untracked files, and deploys nothing; Vercel deploys on its own.
+
 ## Where things live
 
 | What                                                               | Where                                                                                        |
