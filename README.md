@@ -35,9 +35,10 @@ it (with its child processes) when it ends; without a build it stops at once and
 - `test:browser`: Chromium, Firefox and WebKit through Playwright, with standard and reduced
   motion where it matters. It covers layout at nine widths, the command menu (focus trap and
   restoration, the idle preload, typing straight after the first Ctrl+K), the Orin demo
-  (collapsed preview inert, labels, chart data and inputs, all checked against
+  (collapsed preview inert, every result's header and health card above the fade from 320 px
+  up, no shift while the chart loads, labels, chart data and inputs, all checked against
   `content/orin-demo/*.json`), the hero zoom, the site with JavaScript off, and axe-core on
-  every page in Chromium.
+  every page and the NATE result in Chromium.
 
 Playwright and axe-core are dev dependencies imported only by `tests/`, so nothing from them
 reaches the client bundle.

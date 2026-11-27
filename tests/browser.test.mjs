@@ -52,6 +52,14 @@ const frameNotice = ({ source, result: { snapshot } }) =>
 const squash = (text) => text.replace(/\s+/g, " ").trim();
 
 async function axe(page) {
+  // Let running transitions finish first (a sample button fading out of its active colours
+  // has, for a moment, too little contrast).
+  await page.evaluate(() =>
+    Promise.race([
+      Promise.allSettled(document.getAnimations().map((animation) => animation.finished)),
+      new Promise((resolve) => setTimeout(resolve, 2000)),
+    ]),
+  );
   await page.addScriptTag({ path: axePath });
   const violations = await page.evaluate(async () => {
     const result = await window.axe.run({
@@ -67,6 +75,61 @@ async function initialChunks(route) {
   const html = await (await fetch(website(route))).text();
   return new Set(html.match(/\/_next\/static\/chunks\/[^"'\s]+?\.js/g));
 }
+
+/**
+ * Holds back every chunk `route` loads lazily until the returned release() is called.
+ * `onCode` sees each held chunk's code as it arrives from the server.
+ */
+async function holdLazyChunks(page, route, onCode = () => {}) {
+  const initial = await initialChunks(route);
+  let release;
+  const released = new Promise((resolve) => (release = resolve));
+  await page.route(
+    (url) =>
+      url.pathname.startsWith("/_next/static/chunks/") &&
+      url.pathname.endsWith(".js") &&
+      !initial.has(url.pathname),
+    async (held) => {
+      try {
+        const response = await held.fetch();
+        const body = await response.body();
+        onCode(body);
+        await released;
+        await held.fulfill({ response, body });
+      } catch {
+        // The page closed while the chunk was held.
+      }
+    },
+  );
+  return release;
+}
+
+/** Waits for two frames, so layout and ResizeObserver work from the last change are done. */
+const settle = (page) =>
+  page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+
+/** The collapsed Orin preview, in px from the clip's top edge. */
+const previewGeometry = (page) =>
+  page.evaluate(() => {
+    const clip = document.getElementById("orin-demo-result");
+    const analysis = document.getElementById("orin-analysis");
+    const box = clip.getBoundingClientRect();
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const frame = clip.closest(".\\@container").getBoundingClientRect().width;
+    return {
+      clip: box.height,
+      // The design clip (orin-demo.tsx): 62rem, or 56rem in frames 56rem and wider.
+      design: (frame >= 56 * rem ? 56 : 62) * rem,
+      fadeTop: document.querySelector(".demo-expand").getBoundingClientRect().top - box.top,
+      // Everything above the analysis: NATE's notice, the header and the health card.
+      kept: [...analysis.parentElement.children]
+        .filter((part) => part !== analysis)
+        .map((part) => [
+          part.getBoundingClientRect().top - box.top,
+          part.getBoundingClientRect().bottom - box.top,
+        ]),
+    };
+  });
 
 /** Tab from `from` until the Orin disclosure button; every stop on the way. */
 async function tabStopsToDisclosure(page, from) {
@@ -88,18 +151,6 @@ async function tabStopsToDisclosure(page, from) {
   throw new Error("Tab never reached the disclosure button");
 }
 
-/**
- * Opens "View chart data" once the revenue chart above it has drawn. The chart loads lazily,
- * and while its code downloads its placeholder collapses, which moves the summary by about
- * 210px; a click during that move can miss.
- */
-async function openChartData(scope) {
-  const summary = scope.getByText("View chart data", { exact: true });
-  await summary.scrollIntoViewIfNeeded();
-  await scope.locator(".recharts-surface").first().waitFor();
-  await summary.click();
-}
-
 /** Accessible names Chromium exposes in its accessibility tree (ignored nodes left out). */
 async function exposedNames(page) {
   const cdp = await page.context().newCDPSession(page);
@@ -119,19 +170,7 @@ async function firstShortcut(context) {
   const page = await context.newPage();
   page.setDefaultTimeout(8500);
   try {
-    const initial = await initialChunks("/");
-    let release;
-    const released = new Promise((resolve) => (release = resolve));
-    await page.route(
-      (url) =>
-        url.pathname.startsWith("/_next/static/chunks/") &&
-        url.pathname.endsWith(".js") &&
-        !initial.has(url.pathname),
-      async (route) => {
-        await released;
-        await route.continue().catch(() => {});
-      },
-    );
+    const release = await holdLazyChunks(page, "/");
     // Report a non-Apple platform: the trigger's label then changes from the server's "⌘K" to
     // "Ctrl K" in the render that follows hydration's effects, so the shortcut is listened for.
     await page.addInitScript(() =>
@@ -283,29 +322,12 @@ async function orinPreview(page, engine) {
     );
     if (engine === "chromium") assert.ok((await exposedNames(page)).has("What most people miss"));
 
-    // "Show less" collapses it again (from the keyboard: the lazy chart above can still move it).
+    // "Show less", from the keyboard, collapses it again.
     await page.getByRole("button", { name: "Show less" }).focus();
     await page.keyboard.press("Enter");
     await inertIs(true);
     assert.equal(await disclosure.getAttribute("aria-expanded"), "false");
     assert.notEqual(await result.evaluate((element) => getComputedStyle(element).maxHeight), "none");
-  }
-
-  // Every sample keeps its header and health card in full view (above the fade, so inside the
-  // clip too) at both review widths. Below about 350px the fade reaches the health card.
-  for (const { result: data } of samples) {
-    await page.getByRole("button", { name: data.snapshot.ticker, exact: true }).click();
-    await result.getByRole("heading", { name: data.snapshot.companyName, exact: true }).waitFor();
-    await inertIs(true);
-    for (const width of [390, 1440]) {
-      await page.setViewportSize({ width, height: 900 });
-      const clearance = await health.evaluate(
-        (element) =>
-          document.querySelector(".demo-expand").getBoundingClientRect().top -
-          element.getBoundingClientRect().bottom,
-      );
-      assert.ok(clearance >= 0, `${data.snapshot.ticker} health card above the fade at ${width}`);
-    }
   }
 }
 
@@ -519,7 +541,7 @@ for (const name of ["chromium", "firefox", "webkit"]) {
         await page.locator("#orin-analysis > p").innerText(),
         /^Figures are reported in or derived from SEC filings\. Orin calculates the health score; the explanations are AI-written using only those figures\. Not investment advice\.$/,
       );
-      await openChartData(result);
+      await result.getByText("View chart data", { exact: true }).click();
       const table = result.getByRole("table", { name: "Revenue and earnings per share by period" });
       await table.getByRole("columnheader", { name: "Earnings per share" }).waitFor();
       const rows = await table
@@ -576,6 +598,80 @@ for (const name of ["chromium", "firefox", "webkit"]) {
       await page.getByRole("button", { name: amzn.ticker, exact: true }).click();
       await result.getByRole("heading", { name: amzn.companyName, exact: true }).waitFor();
       assert.equal(await disclosure.getAttribute("aria-expanded"), "false");
+    });
+
+    await suite.test(
+      "Orin collapsed preview keeps every result's header and health card above the fade",
+      async () => {
+        await goto(page, "/work/orin");
+        for (const ticker of [...samples.map(({ result }) => result.snapshot.ticker), "NATE"]) {
+          await page.setViewportSize({ width: 1440, height: 900 });
+          if (ticker === "NATE") {
+            await page.getByRole("textbox", { name: "Stock ticker" }).fill("nate");
+            await page.getByRole("button", { name: "Explain it" }).click();
+          } else await page.getByRole("button", { name: ticker, exact: true }).click();
+          await page.waitForFunction(() => document.getElementById("orin-analysis")?.inert === true);
+          for (const width of [320, 360, 390, 412, 768, 1440]) {
+            await page.setViewportSize({ width, height: 900 });
+            await page.waitForFunction((w) => window.innerWidth === w, width);
+            await settle(page);
+            const { clip, design, fadeTop, kept } = await previewGeometry(page);
+            const at = `${ticker} at ${width}`;
+            for (const [top, bottom] of kept) {
+              assert.ok(
+                top >= 0 && bottom <= Math.min(fadeTop, clip) + 0.5,
+                `${at}: inside the clip, above the fade`,
+              );
+            }
+            // The clip only grows where its design height would put them under the fade.
+            if (kept.at(-1)[1] + clip - fadeTop <= design + 0.5) {
+              assert.ok(Math.abs(clip - design) < 0.5, `${at}: design height kept`);
+            }
+            // The first view must not change height on load at common phone widths.
+            if (ticker === "AAPL" && (width === 390 || width === 412)) {
+              assert.ok(Math.abs(clip - design) < 0.5, `${at}: no shift on load`);
+            }
+          }
+        }
+      },
+    );
+
+    await suite.test("the Orin chart takes its placeholder's place without moving what follows", async () => {
+      for (const width of [390, 1440]) {
+        const own = await browser.newContext({ viewport: { width, height: 900 } });
+        try {
+          const fresh = await own.newPage();
+          fresh.setDefaultTimeout(8500);
+          let chartCode;
+          const requested = new Promise((resolve) => (chartCode = resolve));
+          const release = await holdLazyChunks(fresh, "/work/orin", (code) => {
+            if (code.includes("recharts-surface")) chartCode();
+          });
+          await fresh.goto(website("/work/orin"), { waitUntil: "load" });
+          await fresh.waitForFunction(() => document.getElementById("orin-analysis")?.inert === true);
+          await fresh.getByRole("button", { name: "Show the full analysis" }).click();
+          const chartData = panel(fresh).getByText("View chart data", { exact: true });
+          await chartData.scrollIntoViewIfNeeded();
+          // The chart's code is on its way and held: its placeholder stands in.
+          await requested;
+          await settle(fresh);
+          assert.equal(await fresh.locator(".recharts-surface").count(), 0);
+          const offset = () =>
+            chartData.evaluate(
+              (element) =>
+                element.getBoundingClientRect().top -
+                document.getElementById("orin-analysis").getBoundingClientRect().top,
+            );
+          const held = await offset();
+          release();
+          await panel(fresh).locator(".recharts-surface").first().waitFor();
+          await settle(fresh);
+          const moved = (await offset()) - held;
+          assert.ok(Math.abs(moved) <= 1, `Content below the chart moved ${moved}px at ${width}`);
+        } finally {
+          await own.close();
+        }
+      }
     });
 
     await suite.test("clipboard denial, résumé and safe external link contracts", async () => {
@@ -651,9 +747,18 @@ for (const name of ["chromium", "firefox", "webkit"]) {
         await page.waitForFunction(() => document.getElementById("orin-analysis")?.inert === true);
         await axe(page);
         await page.getByRole("button", { name: "Show the full analysis" }).click();
-        await openChartData(panel(page));
+        await page.getByText("View chart data", { exact: true }).click();
         await axe(page);
         await waitFocused(page.getByText("View chart data", { exact: true }));
+        // The NATE easter egg, collapsed and expanded.
+        await page.getByRole("textbox", { name: "Stock ticker" }).fill("nate");
+        await page.getByRole("button", { name: "Explain it" }).click();
+        await panel(page).getByRole("heading", { name: "Nathanael Kim", exact: true }).waitFor();
+        await page.waitForFunction(() => document.getElementById("orin-analysis")?.inert === true);
+        await axe(page);
+        await page.getByRole("button", { name: "Show the full analysis" }).click();
+        await page.waitForFunction(() => document.getElementById("orin-analysis")?.inert === false);
+        await axe(page);
       });
     }
   });
